@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Tenda di Convegno</title>
+
+    <!-- PWA Meta -->
+    <meta name="theme-color" content="#C5A059">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Tenda">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --gold: #C5A059;
+            --gold-light: #D4B475;
+            --gold-dim: rgba(197,160,89,0.15);
+            --bg: #0E0E0E;
+            --surface: #161616;
+            --surface2: #1E1E1E;
+            --text: #E8E0D0;
+            --muted: #6B6458;
+        }
+
+        * { box-sizing: border-box; }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Lato', sans-serif;
+            overflow: hidden;
+        }
+
+        .app {
+            display: flex;
+            flex-direction: column;
+            height: 100dvh;
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        header {
+            flex-shrink: 0;
+            background: var(--surface);
+            border-bottom: 1px solid rgba(197,160,89,0.12);
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .brand { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+        .brand-emoji { font-size: 26px; line-height: 1; }
+        .brand-text h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--gold);
+            margin: 0;
+            line-height: 1.1;
+        }
+        .brand-text p {
+            font-size: 9px;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin: 2px 0 0;
+        }
+
+        .search-bar { display: flex; flex: 1; gap: 8px; }
+        .search-bar input {
+            flex: 1;
+            min-width: 0;
+            background: var(--surface2);
+            border: 1px solid rgba(197,160,89,0.2);
+            border-radius: 999px;
+            padding: 8px 18px;
+            color: var(--text);
+            font-family: 'Lato', sans-serif;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .search-bar input::placeholder { color: var(--muted); }
+        .search-bar input:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(197,160,89,0.12);
+        }
+
+        .btn-entra {
+            background: var(--gold);
+            color: #0E0E0E;
+            border: none;
+            border-radius: 999px;
+            padding: 8px 20px;
+            font-family: 'Lato', sans-serif;
+            font-weight: 700;
+            font-size: 13px;
+            letter-spacing: 0.08em;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .btn-entra:hover { background: var(--gold-light); }
+        .btn-entra:active { transform: scale(0.96); }
+
+        .tabs {
+            display: none;
+            flex-shrink: 0;
+            background: var(--surface);
+            border-bottom: 1px solid rgba(197,160,89,0.1);
+        }
+        .tab-btn {
+            flex: 1;
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            color: var(--muted);
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 16px;
+            font-weight: 600;
+            padding: 10px;
+            cursor: pointer;
+            transition: color 0.2s, border-color 0.2s;
+        }
+        .tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+        main {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            overflow: hidden;
+        }
+
+        .bible-panel {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border-right: 1px solid rgba(197,160,89,0.08);
+        }
+        .bible-panel:last-child { border-right: none; }
+
+        .panel-label {
+            flex-shrink: 0;
+            padding: 8px 16px;
+            background: var(--surface);
+            border-bottom: 1px solid rgba(197,160,89,0.08);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .panel-label span {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--gold);
+        }
+        .panel-label small {
+            font-size: 10px;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        .iframe-wrap { flex: 1; overflow: hidden; position: relative; }
+        .iframe-wrap iframe {
+            width: 100%; height: 100%; border: none;
+            filter: invert(0.92) hue-rotate(180deg) contrast(1.05) brightness(1.05);
+            display: block;
+        }
+
+        .loading-overlay {
+            position: absolute; inset: 0;
+            background: var(--surface);
+            display: flex; align-items: center; justify-content: center;
+            transition: opacity 0.3s; pointer-events: none;
+        }
+        .loading-overlay.hidden { opacity: 0; }
+
+        .spinner {
+            width: 28px; height: 28px;
+            border: 2px solid var(--gold-dim);
+            border-top-color: var(--gold);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        #install-banner {
+            display: none;
+            flex-shrink: 0;
+            background: linear-gradient(135deg, #1A1500, #1E1A06);
+            border-top: 1px solid rgba(197,160,89,0.25);
+            padding: 10px 20px;
+            align-items: center;
+            gap: 12px;
+        }
+        #install-banner p { flex: 1; margin: 0; font-size: 13px; color: var(--text); }
+        #install-banner strong { color: var(--gold); }
+        #install-banner button {
+            background: var(--gold); color: #0E0E0E;
+            border: none; border-radius: 999px;
+            padding: 7px 16px; font-weight: 700; font-size: 12px; cursor: pointer;
+        }
+        #dismiss-banner { background: none !important; color: var(--muted) !important; padding: 4px !important; font-size: 16px !important; }
+
+        @media (max-width: 700px) {
+            main { grid-template-columns: 1fr; }
+            .bible-panel { display: none; }
+            .bible-panel.active { display: flex; }
+            .tabs { display: flex; }
+        }
+    </style>
+</head>
+<body>
+<div class="app">
+
+    <header>
+        <div class="brand">
+            <span class="brand-emoji">⛺</span>
+            <div class="brand-text">
+                <h1>Tenda di Convegno</h1>
+                <p>Meditazione Pentecostale</p>
+            </div>
+        </div>
+        <div class="search-bar">
+            <input id="refInput" type="text" placeholder="Es: Giovanni 3, Salmi 23…" autocomplete="off" autocorrect="off" spellcheck="false">
+            <button class="btn-entra" onclick="updateView()">ENTRA</button>
+        </div>
+    </header>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab(0)">Diodati (IT)</button>
+        <button class="tab-btn" onclick="switchTab(1)">King James (EN)</button>
+    </div>
+
+    <main>
+        <div class="bible-panel active" id="panel-it">
+            <div class="panel-label">
+                <span>Nuova Diodati</span><small>Italiano</small>
+            </div>
+            <div class="iframe-wrap">
+                <div class="loading-overlay" id="load-it"><div class="spinner"></div></div>
+                <iframe id="frameIT"
+                    src="https://www.biblegateway.com/passage/?search=Giovanni%201&version=LND&interface=print"
+                    onload="hideLoader('load-it')" title="Bibbia Nuova Diodati"></iframe>
+            </div>
+        </div>
+
+        <div class="bible-panel" id="panel-en">
+            <div class="panel-label">
+                <span>King James</span><small>English</small>
+            </div>
+            <div class="iframe-wrap">
+                <div class="loading-overlay" id="load-en"><div class="spinner"></div></div>
+                <iframe id="frameEN"
+                    src="https://www.biblegateway.com/passage/?search=John%201&version=KJV&interface=print"
+                    onload="hideLoader('load-en')" title="King James Bible"></iframe>
+            </div>
+        </div>
+    </main>
+
+    <div id="install-banner">
+        <p>📲 <strong>Installa Tenda</strong> per averla sempre a portata di mano</p>
+        <button id="install-btn">Installa</button>
+        <button id="dismiss-banner">✕</button>
+    </div>
+
+</div>
+
+<script>
+    // ── Tab mobile ────────────────────────────────────────────────────────────
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    function switchTab(idx) {
+        ['panel-it','panel-en'].forEach((id,i) => {
+            document.getElementById(id).classList.toggle('active', i === idx);
+            tabBtns[i].classList.toggle('active', i === idx);
+        });
+    }
+
+    // ── Navigazione versetti ──────────────────────────────────────────────────
+    function updateView() {
+        const val = document.getElementById('refInput').value.trim();
+        if (!val) return;
+        showLoader('load-it'); showLoader('load-en');
+        document.getElementById('frameIT').src =
+            `https://www.biblegateway.com/passage/?search=${encodeURIComponent(val)}&version=LND&interface=print`;
+        document.getElementById('frameEN').src =
+            `https://www.biblegateway.com/passage/?search=${encodeURIComponent(val)}&version=KJV&interface=print`;
+    }
+    function showLoader(id) { document.getElementById(id).classList.remove('hidden'); }
+    function hideLoader(id) { document.getElementById(id).classList.add('hidden'); }
+    document.getElementById('refInput').addEventListener('keypress', e => { if (e.key === 'Enter') updateView(); });
+
+    // ── Manifest inline via Blob ──────────────────────────────────────────────
+    const ICON_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+        <rect width="100" height="100" rx="20" fill="#0E0E0E"/>
+        <text y=".9em" font-size="72" x="14">⛺</text>
+    </svg>`;
+    const iconBlob = new Blob([ICON_SVG], {type:'image/svg+xml'});
+    const iconUrl  = URL.createObjectURL(iconBlob);
+
+    // Apple touch icon
+    const appleMeta = document.createElement('link');
+    appleMeta.rel = 'apple-touch-icon';
+    appleMeta.href = iconUrl;
+    document.head.appendChild(appleMeta);
+
+    // Manifest
+    const manifest = {
+        name: "Tenda di Convegno",
+        short_name: "Tenda",
+        description: "Bibbia parallela IT/EN per meditazione pentecostale",
+        start_url: "./",
+        display: "standalone",
+        orientation: "any",
+        background_color: "#0E0E0E",
+        theme_color: "#C5A059",
+        lang: "it",
+        icons: [
+            { src: iconUrl, sizes: "192x192", type: "image/svg+xml", purpose: "any maskable" },
+            { src: iconUrl, sizes: "512x512", type: "image/svg+xml", purpose: "any maskable" }
+        ]
+    };
+    const manifestBlob = new Blob([JSON.stringify(manifest)], {type:'application/manifest+json'});
+    const manifestUrl  = URL.createObjectURL(manifestBlob);
+    const manifestLink = document.createElement('link');
+    manifestLink.rel  = 'manifest';
+    manifestLink.href = manifestUrl;
+    document.head.appendChild(manifestLink);
+
+    // ── Service Worker inline via Blob ────────────────────────────────────────
+    // NOTA: il SW da Blob non supporta il caching offline (limitazione browser),
+    // ma permette la registrazione e il banner di installazione su Chrome/Edge.
+    const swCode = `
+        const CACHE = 'tenda-v1';
+        self.addEventListener('install', e => self.skipWaiting());
+        self.addEventListener('activate', e => self.clients.claim());
+        self.addEventListener('fetch', e => {
+            if (e.request.url.includes('biblegateway.com')) {
+                e.respondWith(fetch(e.request).catch(() => new Response('Offline', {status:503})));
+                return;
+            }
+            e.respondWith(
+                caches.match(e.request).then(r => r || fetch(e.request))
+            );
+        });
+    `;
+    const swBlob = new Blob([swCode], {type:'application/javascript'});
+    const swUrl  = URL.createObjectURL(swBlob);
+
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register(swUrl, {scope: '/'})
+            .then(r => console.log('SW attivo:', r.scope))
+            .catch(e => console.warn('SW:', e));
+    }
+
+    // ── Banner installazione ──────────────────────────────────────────────────
+    let deferredPrompt = null;
+    const banner     = document.getElementById('install-banner');
+    const installBtn = document.getElementById('install-btn');
+    const dismissBtn = document.getElementById('dismiss-banner');
+
+    window.addEventListener('beforeinstallprompt', e => {
+        e.preventDefault();
+        deferredPrompt = e;
+        banner.style.display = 'flex';
+    });
+
+    installBtn.addEventListener('click', async () => {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        deferredPrompt = null;
+        banner.style.display = 'none';
+    });
+
+    dismissBtn.addEventListener('click', () => { banner.style.display = 'none'; });
+    window.addEventListener('appinstalled', () => { banner.style.display = 'none'; });
+</script>
+</body>
+</html>
