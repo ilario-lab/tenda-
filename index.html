@@ -16,22 +16,15 @@
   --gd:rgba(200,164,74,0.13);--gb:rgba(200,164,74,0.22);
   --bg:#0D0B07;--s1:#1A1610;--s2:#221D13;--s3:#2A2418;
   --tx:#EDE5D0;--tx2:#B8A880;--mu:#6A5F42;
-  --blue:#5B9BD5;--blue2:#7BB5E8;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;background:var(--bg);color:var(--tx);font-family:'EB Garamond',Georgia,serif;overflow:hidden}
 .app{display:flex;flex-direction:column;height:100dvh;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
 /* HEADER */
-.hdr{flex-shrink:0;background:var(--s1);border-bottom:1px solid var(--gb);padding:10px 16px;display:flex;align-items:center;gap:10px}
-.brand{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
-.brand h1{font-family:'Cinzel',serif;font-size:16px;font-weight:600;color:var(--gold);letter-spacing:.04em;white-space:nowrap}
-.brand p{font-size:8px;letter-spacing:.25em;text-transform:uppercase;color:var(--mu);margin-top:2px}
-/* MYBIBLE LOADER */
-.loader-btn{flex-shrink:0;display:flex;align-items:center;gap:6px;background:var(--s3);border:1px solid var(--gb);border-radius:6px;padding:6px 10px;cursor:pointer;font-family:'Cinzel',serif;font-size:10px;font-weight:600;letter-spacing:.06em;color:var(--tx2);transition:background .2s,border-color .2s;white-space:nowrap}
-.loader-btn:hover{background:var(--gold);color:#0D0B07;border-color:var(--gold)}
-.loader-btn.loaded{border-color:var(--gold);color:var(--gold)}
-.loader-btn .dot{width:7px;height:7px;border-radius:50%;background:var(--mu);flex-shrink:0;transition:background .3s}
-.loader-btn.loaded .dot{background:#5fba6f}
+.hdr{flex-shrink:0;background:var(--s1);border-bottom:1px solid var(--gb);padding:10px 16px;display:flex;align-items:center}
+.brand{display:flex;align-items:center;gap:10px}
+.brand h1{font-family:'Cinzel',serif;font-size:17px;font-weight:600;color:var(--gold);letter-spacing:.04em;white-space:nowrap}
+.brand p{font-size:8px;letter-spacing:.3em;text-transform:uppercase;color:var(--mu);margin-top:3px}
 /* TABS */
 .tabs{flex-shrink:0;background:var(--s1);border-bottom:1px solid var(--gb);display:flex}
 .tab{flex:1;background:none;border:none;border-bottom:2px solid transparent;color:var(--mu);font-family:'Cinzel',serif;font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;padding:9px 6px;cursor:pointer;transition:color .2s,border-color .2s}
@@ -61,31 +54,11 @@ html,body{height:100%;background:var(--bg);color:var(--tx);font-family:'EB Garam
 /* SECTION TITLE */
 .stitle{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:var(--mu);margin-bottom:14px;display:flex;align-items:center;gap:8px}
 .stitle::after{content:'';flex:1;height:1px;background:var(--s3)}
-/* BIBLE VERSES — Riveduta */
+/* BIBLE */
 .ch-head{font-family:'Cinzel',serif;font-size:17px;font-weight:600;color:var(--gold);margin-bottom:14px;letter-spacing:.04em}
 .verse{display:flex;gap:10px;margin-bottom:8px}
 .vnum{flex-shrink:0;font-family:'Cinzel',serif;font-size:9px;color:var(--gold);margin-top:6px;min-width:20px;text-align:right;opacity:.65}
 .vtxt{font-size:18px;line-height:1.78}
-/* KJV WITH STRONG'S */
-.kjv-section{margin-top:24px;padding-top:16px;border-top:1px solid var(--gb)}
-.kjv-label{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:var(--mu);margin-bottom:12px}
-.kjv-verse{display:flex;gap:10px;margin-bottom:10px;align-items:flex-start}
-.kjv-vnum{flex-shrink:0;font-family:'Cinzel',serif;font-size:9px;color:var(--blue);margin-top:5px;min-width:20px;text-align:right;opacity:.7}
-.kjv-txt{font-size:16px;line-height:1.9;color:var(--tx2)}
-.sw{cursor:pointer;border-bottom:1px dotted var(--blue);color:var(--tx);transition:color .15s,border-color .15s;display:inline}
-.sw:hover{color:var(--blue2);border-color:var(--blue2)}
-.sw sup{font-size:9px;color:var(--blue);font-family:'Cinzel',serif;margin-left:1px;opacity:.8}
-/* STRONG POPUP */
-.popup-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;display:none;align-items:flex-end;justify-content:center;padding:0}
-.popup-overlay.show{display:flex}
-.popup{background:var(--s2);border:1px solid var(--gb);border-radius:16px 16px 0 0;width:100%;max-width:600px;max-height:70vh;overflow-y:auto;padding:20px 20px 32px}
-.popup-num{font-family:'Cinzel',serif;font-size:22px;font-weight:700;color:var(--gold);margin-bottom:2px}
-.popup-trans{font-size:14px;color:var(--gold2);font-style:italic;margin-bottom:14px}
-.popup-body{font-size:17px;line-height:1.8;color:var(--tx)}
-.popup-body strong{color:var(--gold2)}
-.popup-close{position:absolute;top:14px;right:16px;background:none;border:none;color:var(--mu);font-size:22px;cursor:pointer;padding:4px}
-.popup-ext{display:inline-block;margin-top:14px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--blue);text-decoration:none;border-bottom:1px solid var(--blue);padding-bottom:2px}
-.popup-loading{color:var(--mu);font-style:italic;font-size:15px}
 /* DICT */
 .dict-card{background:var(--s2);border:1px solid var(--gb);border-radius:10px;padding:18px 20px 22px;margin-top:4px}
 .dict-term{font-family:'Cinzel',serif;font-size:20px;font-weight:600;color:var(--gold);margin-bottom:3px;text-transform:capitalize}
@@ -107,8 +80,6 @@ html,body{height:100%;background:var(--bg);color:var(--tx);font-family:'EB Garam
 @keyframes spin{to{transform:rotate(360deg)}}
 .err{background:rgba(192,80,64,.1);border:1px solid rgba(192,80,64,.3);border-radius:8px;padding:12px 15px;font-size:14px;color:#E08070;margin:10px 0}
 .ornament{text-align:center;color:var(--gb);font-size:18px;margin:18px 0 16px;letter-spacing:.3em}
-.info-box{background:var(--s2);border:1px solid var(--gb);border-radius:8px;padding:14px 16px;font-size:15px;line-height:1.7;color:var(--tx2);margin-bottom:16px}
-.info-box strong{color:var(--gold)}
 /* PWA */
 #pwa{display:none;flex-shrink:0;background:linear-gradient(135deg,#1c1400,#201800);border-top:1px solid var(--gb);padding:9px 16px;align-items:center;gap:10px}
 #pwa p{flex:1;margin:0;font-size:13px}#pwa strong{color:var(--gold)}
@@ -121,26 +92,22 @@ html,body{height:100%;background:var(--bg);color:var(--tx);font-family:'EB Garam
 
 <div class="hdr">
   <div class="brand">
-    <span style="font-size:22px;flex-shrink:0">⛺</span>
+    <span style="font-size:22px">⛺</span>
     <div><h1>Tenda di Convegno</h1><p>Meditazione Pentecostale</p></div>
   </div>
-  <label class="loader-btn" id="lbl-load" title="Carica il file kjv_bbl.mybible per attivare i numeri Strong">
-    <div class="dot" id="load-dot"></div>
-    <span id="load-txt">Strong's</span>
-    <input type="file" accept=".mybible,.db,.sqlite" style="display:none" id="file-input">
-  </label>
 </div>
 
 <div class="tabs">
-  <button class="tab on" id="tab-home"   onclick="showTab('home')">⛺ Oggi</button>
-  <button class="tab"    id="tab-bibbia" onclick="showTab('bibbia')">📖 Bibbia</button>
-  <button class="tab"    id="tab-diz"    onclick="showTab('diz')">📚 Dizionario</button>
+  <button class="tab on" id="tab-home"    onclick="showTab('home')">⛺ Oggi</button>
+  <button class="tab"    id="tab-bibbia"  onclick="showTab('bibbia')">📖 Bibbia</button>
+  <button class="tab"    id="tab-diz"     onclick="showTab('diz')">📚 Dizionario</button>
 </div>
 
 <div class="sbar" id="sbar-bibbia">
   <input id="bIn" placeholder="Es: Giovanni 3 · Salmi 23 · Romani 8:28-39…" autocomplete="off" autocorrect="off" spellcheck="false" onkeypress="if(event.key==='Enter')searchBible()">
   <button class="btn" onclick="searchBible()">CERCA</button>
 </div>
+
 <div class="sbar" id="sbar-diz">
   <input id="dIn" placeholder="Es: grazia, fede, espiazione, parousia…" autocomplete="off" spellcheck="false" onkeypress="if(event.key==='Enter')searchDict()">
   <button class="btn" onclick="searchDict()">CERCA</button>
@@ -148,7 +115,6 @@ html,body{height:100%;background:var(--bg);color:var(--tx);font-family:'EB Garam
 
 <div class="panels">
 
-  <!-- HOME -->
   <div class="panel on" id="p-home">
     <div class="votd">
       <div class="votd-lbl">Versetto del Giorno <span class="votd-date" id="vdate"></span></div>
@@ -158,17 +124,16 @@ html,body{height:100%;background:var(--bg);color:var(--tx);font-family:'EB Garam
     <div class="ornament">✦ ✦ ✦</div>
     <div class="stitle">Come usare l'app</div>
     <p style="font-size:16px;color:var(--mu);line-height:1.8;margin-bottom:10px">
-      <strong style="color:var(--tx2)">📖 Bibbia</strong> — cerca qualsiasi passo es.
-      <em style="color:var(--gold2)">Giovanni 3</em> o <em style="color:var(--gold2)">Salmi 23:1-6</em>.
-      Carica il file <strong style="color:var(--gold2)">kjv_bbl.mybible</strong> in alto per vedere anche la King James con i numeri Strong cliccabili.
+      <strong style="color:var(--tx2)">📖 Bibbia</strong> — cerca qualsiasi passo per nome,
+      es. <em style="color:var(--gold2)">Giovanni 3</em> o <em style="color:var(--gold2)">Salmi 23:1-6</em>.
     </p>
     <p style="font-size:16px;color:var(--mu);line-height:1.8">
       <strong style="color:var(--tx2)">📚 Dizionario</strong> — approfondisci termini come
-      <em style="color:var(--gold2)">grazia</em>, <em style="color:var(--gold2)">espiazione</em>, <em style="color:var(--gold2)">parousia</em>…
+      <em style="color:var(--gold2)">grazia</em>, <em style="color:var(--gold2)">espiazione</em>,
+      <em style="color:var(--gold2)">parousia</em> e molte altre voci bibliche.
     </p>
   </div>
 
-  <!-- BIBBIA -->
   <div class="panel" id="p-bibbia">
     <div id="bcontent">
       <div class="empty">
@@ -178,7 +143,6 @@ html,body{height:100%;background:var(--bg);color:var(--tx);font-family:'EB Garam
     </div>
   </div>
 
-  <!-- DIZIONARIO -->
   <div class="panel" id="p-diz">
     <div class="stitle">Dizionario Biblico</div>
     <div id="dcontent">
@@ -195,108 +159,30 @@ html,body{height:100%;background:var(--bg);color:var(--tx);font-family:'EB Garam
 
 </div>
 
-<!-- STRONG POPUP -->
-<div class="popup-overlay" id="popup-overlay" onclick="closePopup(event)">
-  <div class="popup" id="popup" style="position:relative">
-    <button class="popup-close" onclick="closePopup()">✕</button>
-    <div class="popup-num" id="pop-num"></div>
-    <div class="popup-trans" id="pop-trans"></div>
-    <div class="popup-body" id="pop-body"></div>
-  </div>
-</div>
-
 <div id="pwa">
   <p>📲 <strong>Installa Tenda</strong> per averla sempre a portata di mano</p>
   <button id="pwa-inst">Installa</button>
   <button id="pwa-x">✕</button>
 </div>
 
-</div>
+</div><!-- /app -->
 
-<!-- sql.js per leggere il file .mybible (SQLite) nel browser -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/sql-wasm.js"></script>
 <script>
-// ═══════════════════════════════════════════════
-// GLOBALS
-// ═══════════════════════════════════════════════
-let sqlDB = null;
-let sqlReady = false;
-
-// ═══════════════════════════════════════════════
-// CARICA DB — prima prova dal server, poi da file
-// ═══════════════════════════════════════════════
-function setLoaderState(state, text) {
-  const lbl = document.getElementById('lbl-load');
-  const dot = document.getElementById('load-dot');
-  const txt = document.getElementById('load-txt');
-  txt.textContent = text;
-  if (state === 'loading') { dot.style.background = 'var(--gold)'; lbl.classList.remove('loaded'); }
-  if (state === 'ok')      { dot.style.background = '#5fba6f';     lbl.classList.add('loaded'); }
-  if (state === 'error')   { dot.style.background = 'var(--mu)';   lbl.classList.remove('loaded'); }
-}
-
-async function openDB(arrayBuffer) {
-  const arr = new Uint8Array(arrayBuffer);
-  sqlDB = new window._SQL.Database(arr);
-  const res = sqlDB.exec('SELECT COUNT(*) FROM Bible');
-  const count = res[0].values[0][0];
-  setLoaderState('ok', `✓ Strong's`);
-  console.log(`MyBible caricato: ${count} versetti`);
-}
-
-// Inizializza sql.js e poi tenta il fetch automatico dal server
-initSqlJs({ locateFile: f => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/${f}` })
-  .then(async SQL => {
-    window._SQL = SQL;
-    sqlReady = true;
-    // Tenta caricamento automatico dal server (funziona su GitHub Pages)
-    setLoaderState('loading', 'Strong\'s…');
-    try {
-      const res = await fetch('./kjv_bbl.mybible');
-      if (!res.ok) throw new Error('file non trovato sul server');
-      const buf = await res.arrayBuffer();
-      await openDB(buf);
-    } catch(e) {
-      // File non sul server: mostra bottone per caricamento manuale
-      setLoaderState('error', 'Carica Strong\'s');
-      console.info('Auto-fetch fallito, usa il bottone per caricare manualmente:', e.message);
-    }
-  })
-  .catch(e => {
-    setLoaderState('error', 'Strong\'s');
-    console.warn('sql.js non caricato:', e);
-  });
-
-// Fallback manuale (se il file non è sul server)
-document.getElementById('file-input').addEventListener('change', async function(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  if (!sqlReady) { setLoaderState('error', 'Non pronto'); return; }
-  setLoaderState('loading', 'Caricamento…');
-  try {
-    const buf = await file.arrayBuffer();
-    await openDB(buf);
-  } catch(err) {
-    setLoaderState('error', 'Riprova');
-    console.error('Errore caricamento:', err.message);
-  }
-});
-
-// ═══════════════════════════════════════════════
+// ═══════════════════════════════════
 // TABS
-// ═══════════════════════════════════════════════
+// ═══════════════════════════════════
 function showTab(name) {
   ['home','bibbia','diz'].forEach(n => {
-    document.getElementById('tab-'+(n==='home'?'home':n==='bibbia'?'bibbia':'diz')).classList.toggle('on', n===name);
+    document.getElementById('tab-'+(n==='bibbia'?'bibbia':n==='diz'?'diz':'home')).classList.toggle('on', n===name);
     document.getElementById('p-'+n).classList.toggle('on', n===name);
   });
   document.getElementById('sbar-bibbia').classList.toggle('show', name==='bibbia');
   document.getElementById('sbar-diz').classList.toggle('show', name==='diz');
 }
 
-// ═══════════════════════════════════════════════
+// ═══════════════════════════════════
 // VOTD
-// ═══════════════════════════════════════════════
+// ═══════════════════════════════════
 const VOTD=[
   ["Giovanni 3:16","Poiché Iddio ha tanto amato il mondo, che ha dato il suo unigenito Figliuolo, acciocché chiunque crede in lui non perisca, ma abbia vita eterna."],
   ["Filippesi 4:13","Io posso ogni cosa in Cristo che mi fortifica."],
@@ -322,4 +208,71 @@ const VOTD=[
   ["1 Giovanni 4:8","Chi non ama non ha conosciuto Iddio, perché Iddio è amore."],
   ["1 Corinzi 13:4","La carità è paziente, è benigna; la carità non invidia; la carità non si vanta, non si gonfia."],
   ["Salmi 34:18","L'Eterno è vicino a quelli che hanno il cuor rotto, e salva quelli che hanno lo spirito contrito."],
-  ["Michea 6:8","Egli ti ha dichiarato, o uomo, ciò che è buono; e che cosa richiede da te 
+  ["Michea 6:8","Egli ti ha dichiarato, o uomo, ciò che è buono; e che cosa richiede da te l'Eterno, se non di praticare la giustizia e di amare la benevolenza, e di camminare umilmente col tuo Dio?"],
+  ["Salmi 37:4","Trova le tue delizie nell'Eterno, ed egli ti darà le richieste del tuo cuore."],
+  ["2 Corinzi 5:17","Talché se uno è in Cristo, egli è una nuova creatura; le cose vecchie sono passate; ecco, tutte le cose sono diventate nuove."],
+  ["Ebrei 11:1","Or la fede è la certezza delle cose che si sperano, la dimostrazione di quelle che non si vedono."],
+  ["1 Pietro 5:7","Gettando sopra di lui ogni vostra ansietà, perché egli ha cura di voi."],
+  ["Salmi 91:1","Chi abita nel segreto luogo dell'Altissimo riposerà all'ombra dell'Onnipotente."],
+  ["Romani 12:2","E non vi conformate a questo secolo, ma siate trasformati mediante il rinnovamento della vostra mente."],
+  ["Colossesi 3:23","Qualunque cosa facciate, fatela di buon animo, come al Signore e non agli uomini."],
+  ["Isaia 53:5","Ma egli è stato trafitto a causa delle nostre trasgressioni, fiaccato a causa delle nostre iniquità."],
+  ["Atti 1:8","Ma riceverete potenza quando lo Spirito Santo verrà su di voi."],
+  ["Giovanni 14:6","Gesù gli disse: Io sono la via, la verità e la vita; nessuno viene al Padre se non per mezzo di me."],
+  ["Salmi 121:2","Il mio aiuto viene dall'Eterno, che ha fatto i cieli e la terra."],
+  ["Giovanni 10:10","Il ladro non viene se non per rubare, ammazzare e distruggere; io son venuto perché abbiano la vita e l'abbiano ad esuberanza."],
+  ["Giacomo 1:5","Se poi alcuno di voi manca di sapienza, la chieda a Dio, che dà a tutti liberalmente e non fa rimproveri, e gli sarà data."],
+  ["Matteo 28:20","Ed ecco, io sono con voi tutti i giorni, sino alla fine dell'età presente."],
+  ["Filippesi 4:7","E la pace di Dio, che supera ogni intelligenza, guarderà i vostri cuori e i vostri pensieri in Cristo Gesù."],
+  ["1 Corinzi 10:13","Nessuna tentazione vi ha còlti fuorché umana; e Iddio è fedele e non permetterà che siate tentati oltre le vostre forze."],
+  ["2 Corinzi 12:9","Ed egli mi ha detto: La mia grazia ti è sufficiente, perché la potenza si perfeziona nella debolezza."],
+  ["Giovanni 1:1","Nel principio era la Parola, e la Parola era con Dio, e la Parola era Dio."],
+  ["Ebrei 4:12","Poiché la parola di Dio è viva ed efficace, e più affilata d'ogni spada a due tagli."],
+  ["Salmi 51:10","O Dio, crea in me un cuor puro, e rinnova dentro di me uno spirito retto."],
+  ["Matteo 22:37","Gesù gli disse: Ama il Signore Iddio tuo con tutto il tuo cuore, con tutta l'anima tua e con tutta la mente tua."],
+  ["Giovanni 11:25","Gesù le disse: Io sono la risurrezione e la vita; chi crede in me, anche se muore, vivrà."],
+  ["1 Giovanni 1:9","Se confessiamo i nostri peccati, egli è fedele e giusto da perdonarci i peccati e purificarci da ogni iniquità."],
+  ["Salmi 103:12","Quanto è lontano l'oriente dall'occidente, così egli ha allontanato da noi le nostre trasgressioni."],
+  ["Marco 11:24","Perciò vi dico: Tutte le cose che domandate, credete di averle ricevute quando pregate, e le avrete."],
+  ["Matteo 7:7","Chiedete e vi sarà dato; cercate e troverete; picchiate e vi sarà aperto."],
+  ["Isaia 43:2","Quando tu passerai per le acque, io sarò con te; e per i fiumi, non ti sommergeranno; quando camminerai nel fuoco, non ti brucerai."],
+  ["Luca 1:37","Poiché niuna cosa è impossibile a Dio."],
+  ["Efesini 3:20","Or a colui che può fare infinitamente di più di tutto quello che domandiamo o pensiamo, secondo la potenza che opera in noi."],
+  ["Romani 1:16","Poiché non mi vergogno del vangelo di Cristo; poiché esso è potenza di Dio per la salvezza di chiunque crede."],
+  ["Salmi 100:3","Riconoscete che l'Eterno è Dio; è lui che ci ha fatti, e noi siamo suoi."],
+  ["Apocalisse 3:20","Ecco, io sto alla porta e picchio; se qualcuno ode la mia voce ed apre la porta, io entrerò da lui e cenerò con lui ed egli con me."],
+  ["2 Cronache 7:14","Se il mio popolo, chiamato del mio nome, si umilia e prega e cerca la mia faccia e si converte dalle sue vie malvagie, io l'udrò dai cieli, perdonerò il loro peccato e guarirò il loro paese."],
+  ["Salmi 139:14","Ti lodo, perché sono fatto in modo stupendo e meraviglioso; le tue opere sono meravigliose, e l'anima mia lo sa bene."],
+  ["Romani 10:9","Che se confessi con la tua bocca Gesù come Signore, e creda nel tuo cuore che Iddio l'ha risuscitato dai morti, sarai salvato."],
+  ["Naum 1:7","L'Eterno è buono, è un rifugio nel giorno della distretta, e conosce quelli che confidano in lui."],
+  ["Salmi 55:22","Getta il tuo peso sopra l'Eterno, ed egli ti sosterrà; egli non permetterà mai che il giusto sia smosso."],
+  ["Deuteronomio 31:6","Sii forte e coraggioso; non temere e non ti spaventare di loro; poiché l'Eterno Iddio tuo è colui che cammina con te."],
+  ["Giovanni 8:32","E conoscerete la verità, e la verità vi farà liberi."],
+  ["Salmi 16:8","Io ho posto l'Eterno sempre davanti a me; poiché egli è alla mia destra, io non sarò smosso."],
+];
+(function(){
+  const n=new Date();
+  const days=['Domenica','Lunedì','Martedì','Mercoledì','Giovedì','Venerdì','Sabato'];
+  const months=['gennaio','febbraio','marzo','aprile','maggio','giugno','luglio','agosto','settembre','ottobre','novembre','dicembre'];
+  document.getElementById('vdate').textContent=days[n.getDay()]+' '+n.getDate()+' '+months[n.getMonth()]+' '+n.getFullYear();
+  const day=Math.floor((n-new Date(n.getFullYear(),0,0))/86400000);
+  const v=VOTD[day%VOTD.length];
+  document.getElementById('vtxt').textContent=v[1];
+  document.getElementById('vref').textContent='— '+v[0];
+})();
+
+// ═══════════════════════════════════
+// BIBLE — parser robusto
+// ═══════════════════════════════════
+// Ogni entry: [bookNum, [alias...], labelDisplay]
+// Gli alias sono in MINUSCOLO, senza accenti, per matching insensibile
+const BOOKS = [
+  [1,  ['genesi','gen'],                                    'Genesi'],
+  [2,  ['esodo'],                                           'Esodo'],
+  [3,  ['levitico','lev'],                                  'Levitico'],
+  [4,  ['numeri','num'],                                    'Numeri'],
+  [5,  ['deuteronomio','deut'],                             'Deuteronomio'],
+  [6,  ['giosue','gios'],                                   'Giosuè'],
+  [7,  ['giudici','giud'],                                  'Giudici'],
+  [8,  ['rut'],                                             'Rut'],
+  [9,  ['1 samu
