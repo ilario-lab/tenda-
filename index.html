@@ -105,6 +105,10 @@ html,body{height:100%;background:var(--bg);color:var(--tx);font-family:'EB Garam
     <span style="font-size:22px;flex-shrink:0">&#x26FA;</span>
     <div><h1>Tenda di Convegno</h1><p>Meditazione Pentecostale</p></div>
   </div>
+  <a id="dl-btn" href="tenda-di-convegno.html" download="tenda-di-convegno.html" title="Scarica l'app come file HTML"
+     style="flex-shrink:0;color:var(--gold);border:1px solid var(--gb);border-radius:6px;padding:6px 10px;font-family:'Cinzel',serif;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;background:var(--s2);transition:background .2s,color .2s">
+    &#x2B07; Scarica
+  </a>
 </div>
 
 <div class="tabs">
@@ -114,11 +118,11 @@ html,body{height:100%;background:var(--bg);color:var(--tx);font-family:'EB Garam
 </div>
 
 <div class="sbar" id="sbar-bibbia">
-  <input id="bIn" placeholder="Es: Giovanni 3 · Salmi 23 · Romani 8:28-39…" autocomplete="off" autocorrect="off" spellcheck="false">
+  <input id="bIn" placeholder="Es: Giovanni 3 &middot; Salmi 23 &middot; Romani 8:28-39&hellip;" autocomplete="off" autocorrect="off" spellcheck="false">
   <button class="btn" id="btn-bib">CERCA</button>
 </div>
 <div class="sbar" id="sbar-diz">
-  <input id="dIn" placeholder="Es: grazia, fede, espiazione, parousia…" autocomplete="off" spellcheck="false">
+  <input id="dIn" placeholder="Es: grazia, fede, espiazione, parousia&hellip;" autocomplete="off" spellcheck="false">
   <button class="btn" id="btn-diz">CERCA</button>
 </div>
 
@@ -130,17 +134,477 @@ html,body{height:100%;background:var(--bg);color:var(--tx);font-family:'EB Garam
       <div class="votd-txt" id="vtxt"></div>
       <div class="votd-ref" id="vref"></div>
     </div>
-    <div class="ornament">✦ ✦ ✦</div>
+    <div class="ornament">&#10022; &#10022; &#10022;</div>
     <div class="stitle">Come usare l'app</div>
     <p style="font-size:16px;color:var(--mu);line-height:1.8;margin-bottom:10px">
-      <strong style="color:var(--tx2)">Bibbia</strong> — cerca qualsiasi passo, es.
+      <strong style="color:var(--tx2)">Bibbia</strong> &mdash; cerca qualsiasi passo, es.
       <em style="color:var(--gold2)">Giovanni 3</em> oppure <em style="color:var(--gold2)">Salmi 23:1-6</em>.
       Vedrai automaticamente la <strong style="color:var(--gold2)">Riveduta Luzzi</strong> e la <strong style="color:var(--gold2)">King James</strong> con i numeri Strong cliccabili per le definizioni di Greco ed Ebraico.
     </p>
     <p style="font-size:16px;color:var(--mu);line-height:1.8">
-      <strong style="color:var(--tx2)">Dizionario</strong> — approfondisci termini come
-      <em style="color:var(--gold2)">grazia</em>, <em style="color:var(--gold2)">espiazione</em>, <em style="color:var(--gold2)">parousia</em>…
+      <strong style="color:var(--tx2)">Dizionario</strong> &mdash; approfondisci termini come
+      <em style="color:var(--gold2)">grazia</em>, <em style="color:var(--gold2)">espiazione</em>, <em style="color:var(--gold2)">parousia</em>&hellip;
     </p>
   </div>
 
-  <div class
+  <div class="panel" id="p-bibbia">
+    <div id="bcontent">
+      <div class="empty">
+        <div class="empty-ico">&#128214;</div>
+        <div style="font-size:14px;line-height:1.6">Usa la barra qui sopra<br>per cercare un passo biblico.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" id="p-diz">
+    <div class="stitle">Dizionario Biblico</div>
+    <div id="dcontent">
+      <div class="empty">
+        <div class="empty-ico">&#128218;</div>
+        <div style="font-size:14px;line-height:1.6">Cerca un termine oppure scegli<br>uno dei suggerimenti qui sotto.</div>
+      </div>
+      <div class="sug-wrap">
+        <div class="sug-title">Termini disponibili</div>
+        <div class="sug-list" id="sug-main"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="popup-overlay" id="popup-overlay">
+  <div class="popup" id="popup">
+    <button class="popup-close" id="popup-close-btn">&times;</button>
+    <div class="popup-num" id="pop-num"></div>
+    <div class="popup-trans" id="pop-trans"></div>
+    <div class="popup-body" id="pop-body"></div>
+  </div>
+</div>
+
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+// TABS
+// ═══════════════════════════════════════════════
+function showTab(name) {
+  ['home','bibbia','diz'].forEach(n => {
+    document.getElementById('tab-'+n).classList.toggle('on', n===name);
+    document.getElementById('p-'+n).classList.toggle('on', n===name);
+  });
+  document.getElementById('sbar-bibbia').classList.toggle('show', name==='bibbia');
+  document.getElementById('sbar-diz').classList.toggle('show', name==='diz');
+}
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => showTab(t.dataset.tab));
+});
+
+// ═══════════════════════════════════════════════
+// VOTD
+// ═══════════════════════════════════════════════
+const VOTD=[
+  ["Giovanni 3:16","Poiché Iddio ha tanto amato il mondo, che ha dato il suo unigenito Figliuolo, acciocché chiunque crede in lui non perisca, ma abbia vita eterna."],
+  ["Filippesi 4:13","Io posso ogni cosa in Cristo che mi fortifica."],
+  ["Geremia 29:11","Poiché io so i pensieri che medito a vostro riguardo, dice l'Eterno: pensieri di pace e non di male, per darvi un avvenire e una speranza."],
+  ["Isaia 40:31","Ma coloro che sperano nell'Eterno riacquistano le forze; si alzano a volo come aquile; corrono, e non si stancano; camminano, e non si affaticano."],
+  ["Salmi 23:1","L'Eterno è il mio pastore: nulla mi mancherà."],
+  ["Romani 8:28","E sappiamo che tutte le cose cooperano al bene di quelli che amano Iddio, i quali sono chiamati secondo il suo proposito."],
+  ["Proverbi 3:5","Confida nell'Eterno con tutto il tuo cuore e non ti appoggiare sul tuo proprio intendimento."],
+  ["Matteo 11:28","Venite a me, voi tutti che siete travagliati ed aggravati, e io vi darò riposo."],
+  ["Salmi 46:1","Iddio è il nostro rifugio e la nostra forza, un aiuto sempre pronto nelle distrette."],
+  ["Giosuè 1:9","Non ti ho io comandato? Sii forte e coraggioso; non ti spaventare e non ti sgomentare, poiché l'Eterno Iddio tuo è con te dovunque tu andrai."],
+  ["Romani 8:38","Or io son persuaso che né morte, né vita, né angeli, né principati, né cose presenti, né cose future, né potestà, né altezza, né profondità, né altra creatura alcuna potrà separarci dall'amore di Dio, che è in Cristo Gesù, nostro Signore."],
+  ["Efesini 2:8","Poiché voi siete salvati per grazia, mediante la fede; e ciò non viene da voi; è il dono di Dio."],
+  ["2 Timoteo 1:7","Poiché Iddio non ci ha dato uno spirito di timidità, ma di forza, d'amore e di saggezza."],
+  ["Isaia 41:10","Non temere, perché io sono con te; non ti smarrire, perché io sono il tuo Dio; io ti fortificherò e ti soccorrerò, sì, ti sosterrò con la destra della mia giustizia."],
+  ["Salmi 27:1","L'Eterno è la mia luce e la mia salvezza; di chi temerò?"],
+  ["Lamentazioni 3:22","Le misericordie dell'Eterno non sono finite; la sua compassione non vien meno."],
+  ["Matteo 6:33","Ma cercate prima il regno di Dio e la sua giustizia, e tutte queste cose vi saranno date in più."],
+  ["Galati 5:22","Ma il frutto dello Spirito è: amore, allegrezza, pace, longanimità, benignità, bontà, fedeltà, mansuetudine, temperanza."],
+  ["Salmi 119:105","La tua parola è una lampada al mio piede e una luce al mio sentiero."],
+  ["Apocalisse 21:4","Egli asciugherà ogni lacrima dagli occhi loro, e la morte non sarà più; né ci sarà più lutto, né grida, né dolore, poiché le cose di prima sono passate."],
+  ["Romani 5:8","Ma Iddio mostra la sua carità verso di noi in questo: che mentre eravamo ancora peccatori, Cristo è morto per noi."],
+  ["1 Giovanni 4:8","Chi non ama non ha conosciuto Iddio, perché Iddio è amore."],
+  ["1 Corinzi 13:4","La carità è paziente, è benigna; la carità non invidia; la carità non si vanta, non si gonfia."],
+  ["Salmi 34:18","L'Eterno è vicino a quelli che hanno il cuor rotto, e salva quelli che hanno lo spirito contrito."],
+  ["Salmi 37:4","Trova le tue delizie nell'Eterno, ed egli ti darà le richieste del tuo cuore."],
+  ["2 Corinzi 5:17","Talché se uno è in Cristo, egli è una nuova creatura; le cose vecchie sono passate; ecco, tutte le cose sono diventate nuove."],
+  ["Ebrei 11:1","Or la fede è la certezza delle cose che si sperano, la dimostrazione di quelle che non si vedono."],
+  ["1 Pietro 5:7","Gettando sopra di lui ogni vostra ansietà, perché egli ha cura di voi."],
+  ["Salmi 91:1","Chi abita nel segreto luogo dell'Altissimo riposerà all'ombra dell'Onnipotente."],
+  ["Romani 12:2","E non vi conformate a questo secolo, ma siate trasformati mediante il rinnovamento della vostra mente."],
+  ["Giovanni 14:6","Gesù gli disse: Io sono la via, la verità e la vita; nessuno viene al Padre se non per mezzo di me."],
+  ["Salmi 121:2","Il mio aiuto viene dall'Eterno, che ha fatto i cieli e la terra."],
+  ["Giovanni 10:10","Il ladro non viene se non per rubare, ammazzare e distruggere; io son venuto perché abbiano la vita e l'abbiano ad esuberanza."],
+  ["Matteo 28:20","Ed ecco, io sono con voi tutti i giorni, sino alla fine dell'età presente."],
+  ["Filippesi 4:7","E la pace di Dio, che supera ogni intelligenza, guarderà i vostri cuori e i vostri pensieri in Cristo Gesù."],
+  ["2 Corinzi 12:9","Ed egli mi ha detto: La mia grazia ti è sufficiente, perché la potenza si perfeziona nella debolezza."],
+  ["Giovanni 1:1","Nel principio era la Parola, e la Parola era con Dio, e la Parola era Dio."],
+  ["Ebrei 4:12","Poiché la parola di Dio è viva ed efficace, e più affilata d'ogni spada a due tagli."],
+  ["Matteo 22:37","Gesù gli disse: Ama il Signore Iddio tuo con tutto il tuo cuore, con tutta l'anima tua e con tutta la mente tua."],
+  ["Giovanni 11:25","Gesù le disse: Io sono la risurrezione e la vita; chi crede in me, anche se muore, vivrà."],
+  ["1 Giovanni 1:9","Se confessiamo i nostri peccati, egli è fedele e giusto da perdonarci i peccati e purificarci da ogni iniquità."],
+  ["Marco 11:24","Perciò vi dico: Tutte le cose che domandate, credete di averle ricevute quando pregate, e le avrete."],
+  ["Matteo 7:7","Chiedete e vi sarà dato; cercate e troverete; picchiate e vi sarà aperto."],
+  ["Isaia 43:2","Quando tu passerai per le acque, io sarò con te; e per i fiumi, non ti sommergeranno; quando camminerai nel fuoco, non ti brucerai."],
+  ["Luca 1:37","Poiché niuna cosa è impossibile a Dio."],
+  ["Romani 1:16","Poiché non mi vergogno del vangelo di Cristo; poiché esso è potenza di Dio per la salvezza di chiunque crede."],
+  ["Apocalisse 3:20","Ecco, io sto alla porta e picchio; se qualcuno ode la mia voce ed apre la porta, io entrerò da lui e cenerò con lui ed egli con me."],
+  ["Romani 10:9","Che se confessi con la tua bocca Gesù come Signore, e creda nel tuo cuore che Iddio l'ha risuscitato dai morti, sarai salvato."],
+  ["Salmi 55:22","Getta il tuo peso sopra l'Eterno, ed egli ti sosterrà; egli non permetterà mai che il giusto sia smosso."],
+  ["Deuteronomio 31:6","Sii forte e coraggioso; non temere e non ti spaventare di loro; poiché l'Eterno Iddio tuo è colui che cammina con te."],
+  ["Giovanni 8:32","E conoscerete la verità, e la verità vi farà liberi."],
+];
+(function(){
+  const n=new Date();
+  const days=['Domenica','Lunedì','Martedì','Mercoledì','Giovedì','Venerdì','Sabato'];
+  const months=['gennaio','febbraio','marzo','aprile','maggio','giugno','luglio','agosto','settembre','ottobre','novembre','dicembre'];
+  document.getElementById('vdate').textContent=days[n.getDay()]+' '+n.getDate()+' '+months[n.getMonth()]+' '+n.getFullYear();
+  const day=Math.floor((n-new Date(n.getFullYear(),0,0))/86400000);
+  const v=VOTD[day%VOTD.length];
+  document.getElementById('vtxt').textContent=v[1];
+  document.getElementById('vref').textContent='— '+v[0];
+})();
+
+// ═══════════════════════════════════════════════
+// BIBLE BOOK MAP
+// ═══════════════════════════════════════════════
+const BOOKS=[
+  [1,['genesi','gen'],'Genesi'],[2,['esodo','es'],'Esodo'],[3,['levitico','lev'],'Levitico'],
+  [4,['numeri','num'],'Numeri'],[5,['deuteronomio','deut','dt'],'Deuteronomio'],
+  [6,['giosue','gios'],'Giosuè'],[7,['giudici','giud'],'Giudici'],[8,['rut'],'Rut'],
+  [9,['1 samuele','1sam','1 sam'],'1 Samuele'],[10,['2 samuele','2sam','2 sam'],'2 Samuele'],
+  [11,['1 re','i re'],'1 Re'],[12,['2 re','ii re'],'2 Re'],
+  [13,['1 cronache','1cron','1 cron'],'1 Cronache'],[14,['2 cronache','2cron','2 cron'],'2 Cronache'],
+  [15,['esdra'],'Esdra'],[16,['neemia'],'Neemia'],[17,['ester'],'Ester'],[18,['giobbe'],'Giobbe'],
+  [19,['salmi','salmo','sal'],'Salmi'],[20,['proverbi','prov'],'Proverbi'],
+  [21,['ecclesiaste','eccl'],'Ecclesiaste'],[22,['cantico dei cantici','cantico','cant'],'Cantico'],
+  [23,['isaia','is'],'Isaia'],[24,['geremia','ger'],'Geremia'],[25,['lamentazioni','lam'],'Lamentazioni'],
+  [26,['ezechiele','ez'],'Ezechiele'],[27,['daniele','dan'],'Daniele'],[28,['osea'],'Osea'],
+  [29,['gioele'],'Gioele'],[30,['amos'],'Amos'],[31,['abdia','abd'],'Abdia'],[32,['giona'],'Giona'],
+  [33,['michea','mic'],'Michea'],[34,['naum'],'Naum'],[35,['abacuc','abac'],'Abacuc'],
+  [36,['sofonia','sof'],'Sofonia'],[37,['aggeo','agg'],'Aggeo'],[38,['zaccaria','zacc'],'Zaccaria'],
+  [39,['malachia','mal'],'Malachia'],[40,['matteo','mt','mat'],'Matteo'],[41,['marco','mc','mar'],'Marco'],
+  [42,['luca','lc'],'Luca'],[43,['giovanni','gv'],'Giovanni'],[44,['atti','at'],'Atti'],
+  [45,['romani','rom','rm'],'Romani'],[46,['1 corinzi','1cor','1 cor'],'1 Corinzi'],[47,['2 corinzi','2cor','2 cor'],'2 Corinzi'],
+  [48,['galati','gal'],'Galati'],[49,['efesini','ef'],'Efesini'],[50,['filippesi','fil'],'Filippesi'],
+  [51,['colossesi','col'],'Colossesi'],[52,['1 tessalonicesi','1ts','1 ts'],'1 Tessalonicesi'],
+  [53,['2 tessalonicesi','2ts','2 ts'],'2 Tessalonicesi'],[54,['1 timoteo','1tim','1 tim'],'1 Timoteo'],
+  [55,['2 timoteo','2tim','2 tim'],'2 Timoteo'],[56,['tito'],'Tito'],[57,['filemone'],'Filemone'],
+  [58,['ebrei','eb'],'Ebrei'],[59,['giacomo','giac','gc'],'Giacomo'],
+  [60,['1 pietro','1pt','1 pt'],'1 Pietro'],[61,['2 pietro','2pt','2 pt'],'2 Pietro'],
+  [62,['1 giovanni','1gv','1 gv'],'1 Giovanni'],[63,['2 giovanni','2gv','2 gv'],'2 Giovanni'],
+  [64,['3 giovanni','3gv','3 gv'],'3 Giovanni'],[65,['giuda'],'Giuda'],[66,['apocalisse','apoc','ap'],'Apocalisse'],
+];
+
+function norm(s){ return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim(); }
+
+function parseRef(raw){
+  const lo=norm(raw);
+  const cands=[];
+  for(const [num,aliases,label] of BOOKS)
+    for(const a of aliases) cands.push({num,label,alias:a});
+  cands.sort((a,b)=>b.alias.length-a.alias.length);
+  for(const {num,label,alias} of cands){
+    if(lo===alias||lo.startsWith(alias+' ')||lo.startsWith(alias+':')){
+      const rest=lo.slice(alias.length).trim();
+      const m=rest.match(/^(\d+)(?:[:\s,.](\d+)(?:\s*[-–]\s*(\d+))?)?/);
+      if(!m) return null;
+      return{num,label,ch:parseInt(m[1]),vf:m[2]?parseInt(m[2]):null,vt:m[3]?parseInt(m[3]):null};
+    }
+  }
+  return null;
+}
+
+function escHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ═══════════════════════════════════════════════
+// PARSE KJV (bolls.life format) — words with <S>NUM</S> tags
+// ═══════════════════════════════════════════════
+// In bolls KJV, Strong's tags appear AFTER the word(s) they refer to, e.g.:
+//   "There was<S>2258</S> a man<S>444</S> of<S>1537</S> the Pharisees<S>5330</S>"
+// Note: numbers are bare; we prefix G for NT (book>=40) and H for OT (book<40).
+function renderKjvVerse(text, isNT) {
+  // Strip bolls' italic / break markers if any
+  text = text.replace(/<br\s*\/?>/gi, ' ');
+  text = text.replace(/<i>([\s\S]*?)<\/i>/gi, '$1');
+  // Tokenize: alternating word-chunks and <S>num</S> tags
+  const parts = text.split(/(<S>\d+<\/S>)/g);
+  const tokens = []; // {w, s:[]}
+  let pendingWord = '';
+  for (let i = 0; i < parts.length; i++) {
+    const p = parts[i];
+    const m = p.match(/^<S>(\d+)<\/S>$/);
+    if (m) {
+      // Strong tag attaches to last non-empty word chunk
+      if (tokens.length === 0 || pendingWord.trim()) {
+        if (pendingWord.trim()) {
+          tokens.push({ w: pendingWord, s: [] });
+          pendingWord = '';
+        }
+      }
+      const last = tokens[tokens.length - 1];
+      if (last) last.s.push((isNT ? 'G' : 'H') + m[1]);
+    } else if (p) {
+      pendingWord += p;
+      // Push as a token if it ends with whitespace boundary AND a Strong follows
+      const next = parts[i+1];
+      if (next && /^<S>\d+<\/S>$/.test(next)) {
+        tokens.push({ w: pendingWord, s: [] });
+        pendingWord = '';
+      }
+    }
+  }
+  if (pendingWord.trim()) tokens.push({ w: pendingWord, s: [] });
+
+  return tokens.map(t => {
+    const word = escHtml(t.w).replace(/\s+/g, ' ');
+    if (!t.s.length) return word;
+    const sNums = t.s.join(',');
+    const sup = t.s.map(s => `<sup>${s}</sup>`).join('');
+    // We need to render the trailing space outside the span so that wrapping looks right
+    const trim = word.replace(/^\s+|\s+$/g, '');
+    const lead = word.startsWith(' ') ? ' ' : '';
+    const trail = word.endsWith(' ') ? ' ' : '';
+    return `${lead}<span class="sw" data-strong="${sNums}">${trim}${sup}</span>${trail}`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════
+// STRONG POPUP
+// ═══════════════════════════════════════════════
+const strongCache = {};
+
+document.getElementById('popup-overlay').addEventListener('click', (e) => {
+  if (e.target.id === 'popup-overlay') closePopup();
+});
+document.getElementById('popup-close-btn').addEventListener('click', closePopup);
+
+function closePopup() {
+  document.getElementById('popup-overlay').classList.remove('show');
+}
+
+// Delegate clicks on Strong words anywhere in the bible content
+document.getElementById('p-bibbia').addEventListener('click', (e) => {
+  const sw = e.target.closest('.sw');
+  if (sw && sw.dataset.strong) showStrong(sw.dataset.strong);
+});
+document.getElementById('popup').addEventListener('click', (e) => {
+  const sw = e.target.closest('.sw');
+  if (sw && sw.dataset.strong) showStrong(sw.dataset.strong);
+});
+
+async function showStrong(numsStr) {
+  const nums = numsStr.split(',');
+  const num = nums[0];
+
+  document.getElementById('popup-overlay').classList.add('show');
+  document.getElementById('pop-num').textContent = num;
+  document.getElementById('pop-trans').textContent = '';
+  document.getElementById('pop-body').innerHTML = '<div class="popup-loading">Caricamento definizione…</div>';
+
+  if (strongCache[num]) {
+    renderStrongData(strongCache[num], num, nums);
+    return;
+  }
+
+  try {
+    // bolls.life: BDBT covers Greek (G####) and Hebrew (H####) Strong's
+    const res = await fetch(`https://bolls.life/dictionary-definition/BDBT/${num}/`);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    strongCache[num] = data;
+    renderStrongData(data, num, nums);
+  } catch(e) {
+    document.getElementById('pop-body').innerHTML = `
+      <p style="color:var(--mu);font-size:15px">Definizione non disponibile (${escHtml(e.message)}).</p>
+      <a class="popup-ext" href="https://www.blueletterbible.org/lexicon/${num}/kjv/wlc/0-1/" target="_blank" rel="noopener">
+        Apri in Blue Letter Bible &rarr;
+      </a>`;
+  }
+}
+
+function renderStrongData(data, num, allNums) {
+  // bolls returns array of {topic, definition} (definition is HTML-ish)
+  const entry = Array.isArray(data) ? data[0] : data;
+  if (!entry) {
+    document.getElementById('pop-body').innerHTML = `
+      <p style="color:var(--mu)">Nessuna definizione trovata per ${num}.</p>
+      <a class="popup-ext" href="https://www.blueletterbible.org/lexicon/${num}/kjv/wlc/0-1/" target="_blank" rel="noopener">Apri in Blue Letter Bible &rarr;</a>`;
+    return;
+  }
+  const def = (entry.definition || '').toString();
+  // Try to extract original word & transliteration from the HTML
+  const origMatch = def.match(/Original:\s*<b>\s*<el>([^<]+)<\/el>\s*<\/b>/i);
+  const transMatch = def.match(/Transliteration:\s*<b>([^<]+)<\/b>/i);
+  const phonMatch = def.match(/Phonetic:\s*<b>([^<]+)<\/b>/i);
+  const orig = origMatch ? origMatch[1].trim() : '';
+  const trans = transMatch ? transMatch[1].trim() : '';
+  const phon = phonMatch ? phonMatch[1].trim() : '';
+  document.getElementById('pop-trans').textContent = [orig, trans, phon].filter(Boolean).join(' · ');
+
+  let html = `<div>${def}</div>`;
+  if (allNums.length > 1) {
+    html += `<p style="margin-top:12px;font-size:14px;color:var(--mu)">Altri numeri associati: ` +
+      allNums.slice(1).map(n => `<span class="sw" data-strong="${n}" style="font-size:14px">${n}</span>`).join(', ') + `</p>`;
+  }
+  html += `<a class="popup-ext" href="https://www.blueletterbible.org/lexicon/${num}/kjv/wlc/0-1/" target="_blank" rel="noopener">Approfondisci in Blue Letter Bible &rarr;</a>`;
+  document.getElementById('pop-body').innerHTML = html;
+}
+
+// ═══════════════════════════════════════════════
+// SEARCH BIBLE
+// ═══════════════════════════════════════════════
+document.getElementById('btn-bib').addEventListener('click', searchBible);
+document.getElementById('bIn').addEventListener('keypress', (e) => { if (e.key === 'Enter') searchBible(); });
+document.getElementById('btn-diz').addEventListener('click', searchDict);
+document.getElementById('dIn').addEventListener('keypress', (e) => { if (e.key === 'Enter') searchDict(); });
+
+async function searchBible() {
+  const raw = document.getElementById('bIn').value.trim();
+  if (!raw) return;
+  const el = document.getElementById('bcontent');
+  el.innerHTML = '<div class="spinner"></div>';
+  showTab('bibbia');
+
+  const p = parseRef(raw);
+  if (!p) {
+    el.innerHTML = '<div class="err">Riferimento non riconosciuto.<br>Esempi: <em>Giovanni 3</em> · <em>Salmi 23:1-6</em> · <em>Romani 8</em></div>';
+    return;
+  }
+
+  try {
+    // Carica in parallelo: Riveduta Luzzi (getbible.net) + KJV con Strong's (bolls.life)
+    const [rivResp, kjvResp] = await Promise.allSettled([
+      fetch(`https://api.getbible.net/v2/riveduta/${p.num}/${p.ch}.json`).then(r => r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status))),
+      fetch(`https://bolls.life/get-text/KJV/${p.num}/${p.ch}/`).then(r => r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status))),
+    ]);
+
+    if (rivResp.status !== 'fulfilled') {
+      el.innerHTML = `<div class="err">Errore caricamento Riveduta Luzzi: ${escHtml(rivResp.reason.message)}</div>`;
+      return;
+    }
+    let rivVs = Array.isArray(rivResp.value.verses) ? rivResp.value.verses : [];
+    if (p.vf) { const vt=p.vt||p.vf; rivVs=rivVs.filter(v=>v.verse>=p.vf&&v.verse<=vt); }
+    if (!rivVs.length) { el.innerHTML='<div class="err">Nessun versetto trovato.</div>'; return; }
+
+    const rangeStr = p.vf ? `${p.ch}:${p.vf}${p.vt&&p.vt!==p.vf?'–'+p.vt:''}` : String(p.ch);
+    let html = `<div class="ch-head">${escHtml(p.label)} ${rangeStr} — Riveduta Luzzi 1927</div>`;
+    rivVs.forEach(v => {
+      html += `<div class="verse"><span class="vnum">${v.verse}</span><span class="vtxt">${v.text}</span></div>`;
+    });
+
+    // KJV con Strong's
+    if (kjvResp.status === 'fulfilled' && Array.isArray(kjvResp.value)) {
+      let kjvVs = kjvResp.value;
+      if (p.vf) { const vt=p.vt||p.vf; kjvVs = kjvVs.filter(v => v.verse >= p.vf && v.verse <= vt); }
+      if (kjvVs.length) {
+        const isNT = p.num >= 40;
+        html += `<div class="kjv-section">
+          <div class="kjv-label">King James Version · Numeri Strong cliccabili</div>`;
+        kjvVs.forEach(v => {
+          const rendered = renderKjvVerse(v.text || '', isNT);
+          html += `<div class="kjv-verse"><span class="kjv-vnum">${v.verse}</span><span class="kjv-txt">${rendered}</span></div>`;
+        });
+        html += `</div>`;
+      }
+    } else {
+      html += `<div class="info-box" style="margin-top:20px">King James non disponibile in questo momento.</div>`;
+    }
+
+    el.innerHTML = html;
+    document.getElementById('p-bibbia').scrollTop = 0;
+
+  } catch(e) {
+    el.innerHTML = `<div class="err">Errore nel caricamento (${escHtml(e.message)}).<br>Verifica la connessione.</div>`;
+  }
+}
+
+// ═══════════════════════════════════════════════
+// DIZIONARIO LOCALE
+// ═══════════════════════════════════════════════
+const DICT = {
+  grazia:{s:"Ebraico <strong>ḥen</strong> (favore gratuito), greco <strong>charis</strong> (dono immeritato). La grazia è il cuore del Vangelo.",at:"Noè «trovò grazia agli occhi dell'Eterno» (Gen 6:8). Dio rivela il suo carattere: «misericordioso, clemente, lento all'ira e ricco in bontà» (Es 34:6). La grazia precede ogni merito umano.",nt:"Paolo pone la grazia al cuore del Vangelo: <em>«Per grazia siete stati salvati mediante la fede; e ciò non viene da voi; è il dono di Dio»</em> (Ef 2:8). La grazia abbonda laddove abbondò il peccato (Rm 5:20).",t:"La grazia è l'atto sovrano con cui Dio si volge verso il peccatore con amore immeritato, lo perdona, lo giustifica e lo trasforma. È la fonte della salvezza e il fondamento di tutta la vita cristiana.",og:"Il credente vive «sotto la grazia» (Rm 6:14): risponde all'amore di Dio con gratitudine e obbedienza. La grazia non elimina l'impegno etico, ma lo rende possibile e gioioso."},
+  fede:{s:"Ebraico <strong>emunah</strong> (fermezza, fedeltà), greco <strong>pistis</strong> (fiducia, credenza, lealtà). Non semplice assenso intellettuale ma fiducia totale.",at:"Abraamo credette a Dio e gli fu imputato a giustizia (Gen 15:6). La fede si manifesta nell'obbedienza fiduciosa. Abacuc: «Il giusto vivrà per la sua fede» (Ab 2:4).",nt:"Eb 11:1: «la fede è certezza delle cose sperate, dimostrazione di quelle non viste». Ef 2:8: mezzo della salvezza. Giacomo: la fede vera produce opere (Gc 2:17).",t:"La vera fede ha tre dimensioni: <em>notitia</em> (conoscenza), <em>assensus</em> (assenso) e <em>fiducia</em> (abbandono personale a Cristo). Non è forza di volontà umana ma risposta allo Spirito Santo.",og:"La fede si nutre della Parola (Rm 10:17). «Senza fede è impossibile piacergli» (Eb 11:6). Il credente cammina «per fede, non per visione» (2 Cor 5:7)."},
+  salvezza:{s:"Ebraico <strong>yeshu'ah</strong>, greco <strong>soteria</strong> (liberazione totale — corporea, spirituale, eterna).",at:"Dio libera Israele dall'Egitto (Es 14–15). I profeti anticipano una salvezza universale (Is 45:22; 49:6). «La salvezza appartiene all'Eterno» (Sal 3:8).",nt:"Salvezza passata (giustificazione, Rm 5:1), presente (santificazione, Fil 2:12) e futura (glorificazione, Rm 8:23). Abbraccia perdono, riconciliazione, rigenerazione, vita eterna.",t:"Opera esclusiva di Dio: il Padre la pianifica, il Figlio la compie, lo Spirito la applica. L'uomo non può contribuirvi con opere proprie (Ef 2:9).",og:"Il credente è «salvato», «si sta salvando» e «sarà salvato». Genera gratitudine, adorazione e impegno missionario (Rm 10:14–15)."},
+  espiazione:{s:"Ebraico <strong>kippùr</strong> (coprire, cancellare), greco <strong>hilasmos</strong> (propiziazione). Rimozione della colpa e della conseguente ira divina.",at:"Sistema sacrificale: il sangue copre il peccato. Yom Kippur (Lv 16): il sommo sacerdote entra nel Santo dei Santi con il sangue per tutto Israele.",nt:"Gesù compie quanto i sacrifici prefiguravano. <em>«Egli è propiziazione per i nostri peccati»</em> (1 Gv 2:2). «Senza spargimento di sangue non vi è remissione» (Eb 9:22).",t:"Risolve il problema della santità di Dio di fronte al peccato umano. La croce è dove giustizia e misericordia si incontrano (Sal 85:10). Cristo è insieme sommo sacerdote e vittima.",og:"Per il credente: pace con Dio (Rm 5:1), coscienza purificata (Eb 10:22), libertà dalla condanna (Rm 8:1). Vita cristiana come risposta grata al prezzo pagato."},
+  parousia:{s:"Greco <strong>parousia</strong> (presenza, venuta, arrivo ufficiale di un re). Il ritorno glorioso di Cristo alla fine dei tempi.",at:"Dn 7:13–14: «Figlio dell'uomo» che viene sulle nuvole. «Giorno dell'Eterno» dei profeti (Gl 2:31; Ml 4:1–5).",nt:"Mt 24:30: «vedrete il Figlio dell'uomo venire sulle nuvole con potenza e grande gloria». 1 Ts 4:13–17: i morti in Cristo risorgeranno; i viventi saranno trasformati (1 Cor 15:51–52).",t:"Speranza beata della Chiesa (Tt 2:13). Segna il compimento del regno di Dio, il giudizio universale, la resurrezione, la nuova creazione.",og:"Purifica il credente (1 Gv 3:2–3), motiva la missione (Mt 24:14), consola nelle sofferenze. «Vieni, Signore Gesù!» (Ap 22:20)."},
+  shalom:{s:"Ebraico <strong>shalom</strong> (integrità, completezza, benessere totale). Non semplice assenza di guerra ma pienezza di vita.",at:"Il dono di Dio ad Israele: «L'Eterno conceda la pace» (Nm 6:26). Il re messianico è «Principe della pace» (Is 9:5).",nt:"Gesù dona la pace che il mondo non può dare (Gv 14:27). Riconciliazione mediante il sangue della croce (Col 1:20). Paolo saluta sempre con «grazia e pace».",t:"Descrive lo stato di chi è in giusta relazione con Dio, il prossimo e il creato. Fine ultimo della redenzione. «La pace di Dio... guarderà i vostri cuori» (Fil 4:7).",og:"Il credente è chiamato a costruire shalom nel matrimonio, nella famiglia, nella chiesa, nella società (Mt 5:9)."},
+  pentecoste:{s:"Greco <strong>Pentekostē</strong> (cinquantesimo giorno). Festa ebraica Shavuot: cinquanta giorni dopo la Pasqua.",at:"Festa del raccolto (Lv 23:15–21). Tradizione rabbinica: dono della Torah al Sinai. Gioele profetizza l'effusione dello Spirito (Gl 2:28–32).",nt:"At 2: lo Spirito scende come lingue di fuoco. Pietro cita Gioele. Tremila si convertono: nasce la Chiesa. Compimento della nuova alleanza.",t:"Passaggio dall'era della Legge all'era dello Spirito. La Legge scritta nel cuore (Ger 31:31–33). Lo Spirito: presenza permanente di Dio nella Chiesa (1 Cor 3:16).",og:"Ogni credente è tempio dello Spirito. I doni edificano la Chiesa; il frutto (Gal 5:22–23) trasforma il carattere."},
+  redenzione:{s:"Ebraico <strong>ga'al/padah</strong> (riscattare pagando un prezzo), greco <strong>apolutrosis</strong> (liberazione mediante riscatto).",at:"Il go'el (parente redentore) riscatta dalla schiavitù (Lv 25:25; Rt 4). Dio redime Israele dall'Egitto (Es 6:6) e da Babilonia (Is 43:1).",nt:"«Il Figlio dell'uomo è venuto per dare la sua vita in riscatto per molti» (Mt 20:28). «La redenzione mediante il suo sangue, il perdono dei peccati» (Ef 1:7).",t:"Presuppone schiavitù, richiede riscatto, ottiene liberazione. Il prezzo: sangue di Cristo (1 Pt 1:18–19). Il risultato: appartenenza a Dio.",og:"Il redento non vive più per sé ma per Cristo (2 Cor 5:15). La redenzione passata garantisce quella futura: liberazione del corpo alla risurrezione (Rm 8:23)."},
+  giustificazione:{s:"Greco <strong>dikaioo</strong> (dichiarare giusto, assolvere). Termine legale: il giudice pronuncia il verdetto di innocenza.",at:"Dio è giudice giusto (Sal 7:11). Abraamo giustificato per fede (Gen 15:6). La giustizia divina ha dimensione salvifica.",nt:"«L'uomo è giustificato per fede, indipendentemente dalle opere della legge» (Rm 3:28). Atto forense istantaneo: Dio dichiara il peccatore giusto per i meriti di Cristo imputati mediante la fede.",t:"Cuore della Riforma: <em>sola fide, sola gratia, solus Christus</em>. La giustizia di Cristo imputata al credente; il peccato del credente imputato a Cristo (2 Cor 5:21).",og:"Produce pace con Dio (Rm 5:1), libertà dalla condanna (Rm 8:1), certezza della salvezza."},
+  santificazione:{s:"Greco <strong>hagiasmos</strong> (separazione, purificazione progressiva). Da <em>hagios</em>: santo = separato per Dio.",at:"«Siate santi, perché io sono santo» (Lv 11:44). Dio santifica sabato (Gen 2:3), popolo (Es 19:6) e Tempio.",nt:"Opera progressiva dello Spirito Santo: trasforma a immagine di Cristo (2 Cor 3:18). Dimensione posizionale e progressiva (Fil 2:12–13). Strumento: la Parola (Gv 17:17).",t:"Risposta alla giustificazione. Cooperazione tra volontà umana e opera dello Spirito: «Operate... poiché è Dio che opera in voi» (Fil 2:12–13).",og:"Cammino di crescita verso la maturità. «Spogliarsi del vecchio uomo, rivestirsi del nuovo» (Ef 4:22–24)."},
+  glorificazione:{s:"Greco <strong>doxazo</strong> (rivestire di gloria). La doxa (gloria) è la manifestazione della perfezione divina.",at:"La gloria di Dio riempie il Tempio (1 Re 8:11). «L'uomo è creato per la gloria di Dio» (Is 43:7).",nt:"«E quelli che ha giustificati, li ha anche glorificati» (Rm 8:30). Alla parousia: corpo mortale trasformato in corpo glorioso simile a quello di Cristo risorto (Fil 3:21; 1 Cor 15:42–44).",t:"Completa la catena aurea: elezione → chiamata → giustificazione → santificazione → glorificazione (Rm 8:29–30).",og:"«Le sofferenze presenti non sono paragonabili alla gloria futura» (Rm 8:18). Motiva la purezza e la perseveranza (1 Gv 3:3)."},
+  spirito_santo:{s:"Ebraico <strong>ruah haqodesh</strong> (vento/soffio del Santo), greco <strong>Pneuma Hagion</strong>. Terza Persona della Trinità.",at:"Attivo nella creazione (Gen 1:2), ispira i profeti (2 Sam 23:2). Gioele profetizza l'effusione universale (Gl 2:28–32).",nt:"Alla Pentecoste effuso sulla Chiesa (At 2). Il Paracleto: abita nei credenti (Gv 14:17), intercede (Rm 8:26), illumina (Gv 16:13), distribuisce i doni (1 Cor 12), santifica.",t:"Pienamente Dio, distinto ma unito al Padre e al Figlio. Non parla di sé ma glorifica Cristo (Gv 16:14).",og:"Ogni credente è tempio dello Spirito (1 Cor 3:16). Deve camminare secondo lo Spirito (Rm 8:4) e non contristarlo (Ef 4:30)."},
+  trinita:{s:"Latino <strong>trinitas</strong>. Sintesi dell'insegnamento biblico: un Dio in tre Persone.",at:"Implicita: «facciamo l'uomo» (Gen 1:26), Spirito sulla creazione (Gen 1:2). Lo Shema': «L'Eterno è uno» (Dt 6:4).",nt:"Battesimo di Gesù: Figlio nell'acqua, Spirito come colomba, voce del Padre (Mt 3:16–17). Formula battesimale trinitaria (Mt 28:19).",t:"Un'essenza, tre Persone distinte ma inseparabili. La Trinità è la struttura della realtà divina: Dio è intrinsecamente relazione e amore.",og:"Il Padre ci ha amati, il Figlio ci ha redenti, lo Spirito ci ha trasformati. La vita cristiana è partecipazione alla vita trinitaria (2 Pt 1:4)."},
+  incarnazione:{s:"Latino <strong>incarnatio</strong>. Il Verbo eterno assume la natura umana rimanendo pienamente divino.",at:"Promesse messianiche: Is 7:14 (vergine), Mi 5:2 (Betlemme), Is 35:4 (Dio che viene).",nt:"«La Parola divenne carne e abitò fra di noi» (Gv 1:14). Cristo «svuotò sé stesso, prendendo forma di servo» (Fil 2:6–7). Calcedonia (451): due nature in una Persona.",t:"Solo un uomo può rappresentare l'umanità; solo Dio può salvarla. Cristo è il Mediatore unico (1 Tim 2:5).",og:"Rivela la dignità del corpo e della materia. Il credente è chiamato a incarnare il Vangelo nella vita quotidiana concreta."},
+  alleanza:{s:"Ebraico <strong>berit</strong> (patto solenne). Spesso suggellato col sangue.",at:"Alleanze progressive: Noè (Gen 9), Abraamo (Gen 15; 17), Mosè/Israele (Es 19–24), Davide (2 Sam 7). Geremia: nuova alleanza con la Legge nel cuore (Ger 31:31–34).",nt:"Gesù istituisce la nuova alleanza col suo sangue (Lc 22:20; 1 Cor 11:25). Alleanza migliore con promesse migliori (Eb 8:6).",t:"Le alleanze mostrano Dio come partner fedele. L'iniziativa è sempre divina; la risposta umana è fede e obbedienza.",og:"Il credente è «ministro della nuova alleanza» (2 Cor 3:6). La Cena del Signore la commemora ad ogni celebrazione."},
+  resurrezione:{s:"Greco <strong>anastasis</strong> (ri-alzarsi). Non immortalità dell'anima ma rianimazione del corpo trasformato.",at:"Gb 19:26: «nella mia carne vedrò Dio». Dn 12:2: «molti si risveglieranno». Ez 37: valle di ossa aride.",nt:"La risurrezione di Gesù è il cuore del Vangelo (1 Cor 15:3–4) e garanzia della nostra: «Cristo è le primizie» (1 Cor 15:20). Alla parousia tutti risorgeranno (Gv 5:28–29).",t:"Distingue la fede cristiana dalle filosofie che svalutano la materia. Il corpo risorto: incorruttibile, glorioso, spirituale.",og:"Senza risurrezione «la nostra predicazione è vana» (1 Cor 15:14). La speranza trasforma il modo in cui il credente vive, soffre e muore."},
+  battesimo:{s:"Greco <strong>baptizo</strong> (immergere, sommergere). Rito iniziatico con acqua nel nome della Trinità.",at:"I lavacri rituali dell'AT prefigurano il battesimo. Il Mar Rosso (1 Cor 10:2) e la circoncisione (Col 2:11–12) sono tipi.",nt:"Gesù battezzato per solidarietà con l'umanità (Mt 3:13–17). Ordine missionario: battezzare tutti i popoli (Mt 28:19). Il credente unito alla morte e risurrezione di Cristo (Rm 6:3–4).",t:"Segno e sigillo dell'alleanza, rito di iniziazione. Non è il battesimo che salva ma la fede a cui si lega.",og:"Impegna a vita nuova. Il suo ricordo è fonte di identità e coraggio: «Sono figlio di Dio, appartengo a Cristo»."},
+  preghiera:{s:"Ebraico <strong>tefillah</strong>, greco <strong>proseuche</strong>. Il dialogo con il Padre: respiro dell'anima.",at:"Abraamo intercede per Sodoma (Gen 18). I Salmi: libro di preghiera di Israele con tutte le sue forme.",nt:"Gesù prega regolarmente (Lc 5:16) e insegna il Padre Nostro (Mt 6:9–13). «Pregate senza intermissione» (1 Ts 5:17). Lo Spirito aiuta nella preghiera (Rm 8:26).",t:"Non magia ma relazione: il figlio che parla al Padre. Forme: adorazione, confessione, ringraziamento, supplica, intercessione.",og:"«In ogni cosa fate conoscere le vostre richieste a Dio» (Fil 4:6). Respiro della fede, arma dello Spirito, motore della missione."},
+  peccato:{s:"Ebraico <strong>hattat</strong> (mancare il bersaglio), greco <strong>hamartia</strong> (perdere il segno). Trasgressione, ribellione, mancanza verso Dio.",at:"Entra con la caduta (Gen 3). «Tutti hanno peccato» (Sal 51:5). I profeti denunciano il peccato etico, cultuale e sociale.",nt:"«Tutti hanno peccato e sono privi della gloria di Dio» (Rm 3:23). Potenza che domina senza Cristo (Rm 7). Con la morte di Cristo il suo potere è spezzato (Rm 6:6–7).",t:"Dimensioni: colpa, contaminazione, potere, morte. Cristo affronta tutte e quattro: perdona, purifica, spezza il potere, offre vita eterna.",og:"Il credente confessa il peccato (1 Gv 1:9), si pente, cammina nello Spirito (Gal 5:16). Non è più schiavo del peccato (Rm 6:11)."},
+  perdono:{s:"Ebraico <strong>salah/nasa'</strong> (portare via, togliere), greco <strong>aphiemi</strong> (mandare via, rilasciare). Rimuove la colpa, ripristina la relazione.",at:"«L'Eterno è Dio compassionevole... che perdona l'iniquità» (Es 34:6–7). «Egli perdona tutte le tue iniquità» (Sal 103:3). I sacrifici mediano il perdono.",nt:"Gesù perdona con autorità divina (Mc 2:5–7). Sulla croce: «Padre, perdona loro» (Lc 23:34). «Se confessiamo i nostri peccati, egli è fedele e giusto da perdonarci» (1 Gv 1:9).",t:"Non lassismo ma giustizia in Cristo: i peccati non sono ignorati ma posti su di lui. Chi è perdonato molto ama molto (Lc 7:47).",og:"Il credente perdona come Dio ha perdonato in Cristo (Ef 4:32; Col 3:13). Il perdono reciproco esprime la grazia ricevuta e rompe il ciclo della vendetta."},
+  regno_di_dio:{s:"Greco <strong>basileia tou Theou</strong> (regnare/governo sovrano di Dio). Non luogo geografico ma regno attivo.",at:"Dio è re dell'universo (Sal 93; 99). I profeti annunciano un regno messianico (Is 9:6–7; Dn 2:44; 7:14).",nt:"Già presente («è in mezzo a voi», Lc 17:21) e ancora futuro («venga il tuo regno», Mt 6:10). Tema centrale di Gesù (Mc 1:15). Cresce come seme e lievito (Mt 13).",t:"Tensione «già/non ancora»: inaugurato in Cristo e nello Spirito, non ancora consumato. La Chiesa ne è segno e strumento.",og:"«Cercate prima il regno di Dio» (Mt 6:33). Missione, giustizia e cura del creato come espressioni del regno già presente."},
+  riconciliazione:{s:"Greco <strong>katallasso</strong> (trasformare ostilità in pace). Ripristina la relazione rotta dal peccato.",at:"I sacrifici e le intercessioni profetiche prefigurano la riconciliazione finale. Is 53:5: il servo porta la pace.",nt:"«Dio in Cristo riconciliava il mondo con sé stesso» (2 Cor 5:19). È Dio che riconcilia l'uomo. Abbraccia anche la dimensione orizzontale: Ebrei e Gentili (Ef 2:14–16).",t:"Presuppone alienazione reale. Cristo è il Mediatore unico (1 Tim 2:5). Atto compiuto («siamo stati riconciliati», Rm 5:10) e realtà da sperimentare.",og:"Il credente diventa «ambasciatore di riconciliazione» (2 Cor 5:20): portatore della pace con Dio e costruttore di pace nelle relazioni umane."},
+  elezione:{s:"Ebraico <strong>bahar</strong> (scegliere), greco <strong>eklegomai</strong>. Scelta sovrana e gratuita di Dio.",at:"Dio sceglie Israele non per meriti ma per amore gratuito (Dt 7:6–7). Abraamo (Gen 12:1–3), Davide (1 Sam 16:12–13). L'elezione è per la missione.",nt:"«Eletti in Cristo prima della fondazione del mondo» (Ef 1:4). L'elezione è sempre in Cristo. Catena aurea (Rm 8:28–30).",t:"Dottrina di comfort, non di esclusione. Assicura che la salvezza dipende dalla sovranità fedele di Dio. Compatibile con la responsabilità umana.",og:"«Siete una stirpe eletta... affinché proclamiate le virtù di colui che vi ha chiamati» (1 Pt 2:9). Produce umiltà, gratitudine e impegno missionario."}
+};
+
+const DICT_LABELS = { spirito_santo:'Spirito Santo', trinita:'Trinità', regno_di_dio:'Regno di Dio' };
+const SUGGESTIONS = ['grazia','fede','salvezza','espiazione','parousia','shalom','pentecoste','redenzione','giustificazione','santificazione','glorificazione','spirito_santo','trinita','incarnazione','alleanza','resurrezione','battesimo','preghiera','peccato','perdono','regno_di_dio','riconciliazione','elezione'];
+
+function getSugLabel(k){ return DICT_LABELS[k]||k.charAt(0).toUpperCase()+k.slice(1).replace(/_/g,' '); }
+
+(function(){
+  const c=document.getElementById('sug-main');
+  SUGGESTIONS.forEach(k=>{
+    const b=document.createElement('button');b.className='sug-btn';b.textContent=getSugLabel(k);
+    b.onclick=()=>{document.getElementById('dIn').value=getSugLabel(k);renderDict(k);showTab('diz');};
+    c.appendChild(b);
+  });
+})();
+
+function searchDict(){
+  const raw=document.getElementById('dIn').value.trim();
+  if(!raw) return;
+  const q=norm(raw).replace(/\s+/g,'_');
+  const qSpace=norm(raw);
+  const keys=Object.keys(DICT);
+  let found=keys.find(k=>norm(k)===q||norm(k).replace(/_/g,' ')===qSpace);
+  if(!found){
+    const aliasMap={'spirito santo':'spirito_santo','spirito':'spirito_santo','trinita':'trinita','trinità':'trinita','regno di dio':'regno_di_dio','regno':'regno_di_dio'};
+    const aliasTarget=aliasMap[qSpace]||aliasMap[q];
+    if(aliasTarget&&DICT[aliasTarget]) found=aliasTarget;
+  }
+  if(!found) found=keys.find(k=>{const kn=norm(k).replace(/_/g,' ');return kn.includes(qSpace)||qSpace.includes(kn);});
+  if(!found){
+    const el=document.getElementById('dcontent');
+    el.innerHTML=`<div class="err">Termine "<strong>${escHtml(raw)}</strong>" non trovato.</div><div class="sug-wrap"><div class="sug-list" id="sug-err"></div></div>`;
+    const c=document.getElementById('sug-err');
+    SUGGESTIONS.forEach(k=>{const b=document.createElement('button');b.className='sug-btn';b.textContent=getSugLabel(k);b.onclick=()=>{document.getElementById('dIn').value=getSugLabel(k);renderDict(k);};c.appendChild(b);});
+    return;
+  }
+  renderDict(found);
+}
+
+function renderDict(key){
+  const d=DICT[key]; if(!d) return;
+  const label=getSugLabel(key);
+  const el=document.getElementById('dcontent');
+  el.innerHTML=`<div class="dict-card"><div class="dict-term">${label}</div><div class="dict-body">
+    <h3>Etimologia e significato</h3><p>${d.s}</p>
+    <h3>Nel Vecchio Testamento</h3><p>${d.at}</p>
+    <h3>Nel Nuovo Testamento</h3><p>${d.nt}</p>
+    <h3>Significato teologico</h3><p>${d.t}</p>
+    <h3>Rilevanza spirituale oggi</h3><p>${d.og}</p>
+  </div></div>
+  <div class="sug-wrap" style="margin-top:20px"><div class="sug-title">Altri termini</div><div class="sug-list" id="sug-other"></div></div>`;
+  const c=document.getElementById('sug-other');
+  SUGGESTIONS.filter(k=>k!==key).forEach(k=>{
+    const b=document.createElement('button');b.className='sug-btn';b.textContent=getSugLabel(k);
+    b.onclick=()=>{document.getElementById('dIn').value=getSugLabel(k);renderDict(k);};c.appendChild(b);
+  });
+  document.getElementById('p-diz').scrollTop=0;
+}
+</script>
+</body>
+</html>
