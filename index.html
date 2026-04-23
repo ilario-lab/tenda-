@@ -11,216 +11,293 @@
 <meta name="apple-mobile-web-app-title" content="Tenda">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
 <style>
-:root {
-  --gold: #C8A44A; --gold2: #E2C47A;
-  --gold-dim: rgba(200,164,74,0.15);
-  --gold-border: rgba(200,164,74,0.22);
-  --bg: #0D0B07; --surface: #1A1610;
-  --surface2: #221D13; --surface3: #2A2418;
-  --text: #EDE5D0; --text2: #B8A880; --muted: #6A5F42;
+:root{
+  --gold:#C8A44A;--gold2:#E2C47A;
+  --gd:rgba(200,164,74,0.13);--gb:rgba(200,164,74,0.22);
+  --bg:#0D0B07;--s1:#1A1610;--s2:#221D13;--s3:#2A2418;
+  --tx:#EDE5D0;--tx2:#B8A880;--mu:#6A5F42;
+  --blue:#5B9BD5;--blue2:#7BB5E8;
 }
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-html,body{height:100%;background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,serif;overflow:hidden;}
-.app{display:flex;flex-direction:column;height:100dvh;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom);}
-
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--bg);color:var(--tx);font-family:'EB Garamond',Georgia,serif;overflow:hidden}
+.app{display:flex;flex-direction:column;height:100dvh;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
 /* HEADER */
-header{flex-shrink:0;background:var(--surface);border-bottom:1px solid var(--gold-border);padding:10px 16px;display:flex;align-items:center;gap:12px;}
-.brand{display:flex;align-items:center;gap:10px;flex-shrink:0;}
-.brand-emoji{font-size:22px;}
-.brand-text h1{font-family:'Cinzel',serif;font-size:17px;font-weight:600;color:var(--gold);line-height:1;white-space:nowrap;letter-spacing:.04em;}
-.brand-text p{font-size:8px;letter-spacing:.3em;text-transform:uppercase;color:var(--muted);margin-top:3px;}
-
+.hdr{flex-shrink:0;background:var(--s1);border-bottom:1px solid var(--gb);padding:10px 16px;display:flex;align-items:center;gap:10px}
+.brand{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
+.brand h1{font-family:'Cinzel',serif;font-size:16px;font-weight:600;color:var(--gold);letter-spacing:.04em;white-space:nowrap}
+.brand p{font-size:8px;letter-spacing:.25em;text-transform:uppercase;color:var(--mu);margin-top:2px}
+/* MYBIBLE LOADER */
+.loader-btn{flex-shrink:0;display:flex;align-items:center;gap:6px;background:var(--s3);border:1px solid var(--gb);border-radius:6px;padding:6px 10px;cursor:pointer;font-family:'Cinzel',serif;font-size:10px;font-weight:600;letter-spacing:.06em;color:var(--tx2);transition:background .2s,border-color .2s;white-space:nowrap}
+.loader-btn:hover{background:var(--gold);color:#0D0B07;border-color:var(--gold)}
+.loader-btn.loaded{border-color:var(--gold);color:var(--gold)}
+.loader-btn .dot{width:7px;height:7px;border-radius:50%;background:var(--mu);flex-shrink:0;transition:background .3s}
+.loader-btn.loaded .dot{background:#5fba6f}
 /* TABS */
-.tabs{flex-shrink:0;background:var(--surface);border-bottom:1px solid var(--gold-border);display:flex;}
-.tab{flex:1;background:none;border:none;border-bottom:2px solid transparent;color:var(--muted);font-family:'Cinzel',serif;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:9px 8px;cursor:pointer;transition:color .2s,border-color .2s;}
-.tab.active{color:var(--gold);border-bottom-color:var(--gold);}
-
-/* SEARCH BAR — shown only on bible tab */
-.bible-searchbar{flex-shrink:0;background:var(--surface2);border-bottom:1px solid var(--gold-border);padding:10px 14px;display:none;gap:8px;}
-.bible-searchbar.visible{display:flex;}
-.bible-searchbar input{flex:1;min-width:0;background:var(--bg);border:1px solid var(--gold-border);border-radius:6px;padding:8px 14px;color:var(--text);font-family:'EB Garamond',serif;font-size:15px;outline:none;transition:border-color .2s,box-shadow .2s;}
-.bible-searchbar input::placeholder{color:var(--muted);}
-.bible-searchbar input:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-dim);}
-.btn{background:var(--gold);color:#0D0B07;border:none;border-radius:6px;padding:8px 16px;font-family:'Cinzel',serif;font-weight:600;font-size:12px;letter-spacing:.08em;cursor:pointer;transition:background .2s,transform .1s;white-space:nowrap;flex-shrink:0;}
-.btn:hover{background:var(--gold2);}
-.btn:active{transform:scale(.96);}
-
+.tabs{flex-shrink:0;background:var(--s1);border-bottom:1px solid var(--gb);display:flex}
+.tab{flex:1;background:none;border:none;border-bottom:2px solid transparent;color:var(--mu);font-family:'Cinzel',serif;font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;padding:9px 6px;cursor:pointer;transition:color .2s,border-color .2s}
+.tab.on{color:var(--gold);border-bottom-color:var(--gold)}
+/* SEARCH BARS */
+.sbar{flex-shrink:0;background:var(--s2);border-bottom:1px solid var(--gb);padding:9px 13px;gap:8px;display:none}
+.sbar.show{display:flex}
+.sbar input{flex:1;background:var(--bg);border:1px solid var(--gb);border-radius:6px;padding:8px 13px;color:var(--tx);font-family:'EB Garamond',serif;font-size:15px;outline:none;transition:border-color .2s,box-shadow .2s}
+.sbar input:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gd)}
+.sbar input::placeholder{color:var(--mu)}
+.btn{background:var(--gold);color:#0D0B07;border:none;border-radius:6px;padding:8px 15px;font-family:'Cinzel',serif;font-weight:600;font-size:12px;letter-spacing:.07em;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:background .2s}
+.btn:hover{background:var(--gold2)}
 /* PANELS */
-.panels{flex:1;overflow:hidden;position:relative;}
-.panel{position:absolute;inset:0;overflow-y:auto;padding:20px 18px 40px;display:none;scrollbar-width:thin;scrollbar-color:var(--muted) transparent;}
-.panel.active{display:block;}
-.panel::-webkit-scrollbar{width:4px;}
-.panel::-webkit-scrollbar-thumb{background:var(--muted);border-radius:2px;}
-
-/* VERSETTO DEL GIORNO */
-.votd-card{background:linear-gradient(135deg,var(--surface2),var(--surface3));border:1px solid var(--gold-border);border-radius:10px;padding:20px 22px;margin-bottom:24px;position:relative;overflow:hidden;}
-.votd-card::before{content:'❝';position:absolute;top:-8px;right:14px;font-size:80px;color:var(--gold-dim);line-height:1;font-family:Georgia,serif;pointer-events:none;}
-.votd-label{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
-.votd-label::after{content:'';flex:1;height:1px;background:var(--gold-border);}
-.votd-date{font-size:9px;color:var(--muted);letter-spacing:.1em;}
-.votd-text{font-size:20px;line-height:1.65;color:var(--text);font-style:italic;margin-bottom:12px;}
-.votd-ref{font-family:'Cinzel',serif;font-size:12px;color:var(--gold2);letter-spacing:.05em;text-align:right;}
-
+.panels{flex:1;overflow:hidden;position:relative}
+.panel{position:absolute;inset:0;overflow-y:auto;padding:18px 16px 40px;display:none;scrollbar-width:thin;scrollbar-color:var(--mu) transparent}
+.panel.on{display:block}
+.panel::-webkit-scrollbar{width:4px}
+.panel::-webkit-scrollbar-thumb{background:var(--mu);border-radius:2px}
+/* VOTD */
+.votd{background:linear-gradient(135deg,var(--s2),var(--s3));border:1px solid var(--gb);border-radius:10px;padding:20px 22px;margin-bottom:22px;position:relative;overflow:hidden}
+.votd::before{content:'❝';position:absolute;top:-8px;right:14px;font-size:80px;color:var(--gd);line-height:1;font-family:Georgia,serif;pointer-events:none}
+.votd-lbl{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.votd-lbl::after{content:'';flex:1;height:1px;background:var(--gb)}
+.votd-date{font-size:9px;color:var(--mu)}
+.votd-txt{font-size:20px;line-height:1.65;font-style:italic;margin-bottom:12px}
+.votd-ref{font-family:'Cinzel',serif;font-size:12px;color:var(--gold2);text-align:right;letter-spacing:.04em}
 /* SECTION TITLE */
-.section-title{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
-.section-title::after{content:'';flex:1;height:1px;background:var(--surface3);}
-
-/* VERSES */
-.chapter-heading{font-family:'Cinzel',serif;font-size:17px;font-weight:600;color:var(--gold);margin-bottom:14px;letter-spacing:.04em;}
-.verse{display:flex;gap:10px;margin-bottom:8px;}
-.vnum{flex-shrink:0;font-family:'Cinzel',serif;font-size:9px;color:var(--gold);margin-top:6px;min-width:20px;text-align:right;opacity:.7;}
-.vtxt{font-size:18px;line-height:1.75;color:var(--text);}
-
+.stitle{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:var(--mu);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.stitle::after{content:'';flex:1;height:1px;background:var(--s3)}
+/* BIBLE VERSES — Riveduta */
+.ch-head{font-family:'Cinzel',serif;font-size:17px;font-weight:600;color:var(--gold);margin-bottom:14px;letter-spacing:.04em}
+.verse{display:flex;gap:10px;margin-bottom:8px}
+.vnum{flex-shrink:0;font-family:'Cinzel',serif;font-size:9px;color:var(--gold);margin-top:6px;min-width:20px;text-align:right;opacity:.65}
+.vtxt{font-size:18px;line-height:1.78}
+/* KJV WITH STRONG'S */
+.kjv-section{margin-top:24px;padding-top:16px;border-top:1px solid var(--gb)}
+.kjv-label{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:var(--mu);margin-bottom:12px}
+.kjv-verse{display:flex;gap:10px;margin-bottom:10px;align-items:flex-start}
+.kjv-vnum{flex-shrink:0;font-family:'Cinzel',serif;font-size:9px;color:var(--blue);margin-top:5px;min-width:20px;text-align:right;opacity:.7}
+.kjv-txt{font-size:16px;line-height:1.9;color:var(--tx2)}
+.sw{cursor:pointer;border-bottom:1px dotted var(--blue);color:var(--tx);transition:color .15s,border-color .15s;display:inline}
+.sw:hover{color:var(--blue2);border-color:var(--blue2)}
+.sw sup{font-size:9px;color:var(--blue);font-family:'Cinzel',serif;margin-left:1px;opacity:.8}
+/* STRONG POPUP */
+.popup-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;display:none;align-items:flex-end;justify-content:center;padding:0}
+.popup-overlay.show{display:flex}
+.popup{background:var(--s2);border:1px solid var(--gb);border-radius:16px 16px 0 0;width:100%;max-width:600px;max-height:70vh;overflow-y:auto;padding:20px 20px 32px}
+.popup-num{font-family:'Cinzel',serif;font-size:22px;font-weight:700;color:var(--gold);margin-bottom:2px}
+.popup-trans{font-size:14px;color:var(--gold2);font-style:italic;margin-bottom:14px}
+.popup-body{font-size:17px;line-height:1.8;color:var(--tx)}
+.popup-body strong{color:var(--gold2)}
+.popup-close{position:absolute;top:14px;right:16px;background:none;border:none;color:var(--mu);font-size:22px;cursor:pointer;padding:4px}
+.popup-ext{display:inline-block;margin-top:14px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--blue);text-decoration:none;border-bottom:1px solid var(--blue);padding-bottom:2px}
+.popup-loading{color:var(--mu);font-style:italic;font-size:15px}
+/* DICT */
+.dict-card{background:var(--s2);border:1px solid var(--gb);border-radius:10px;padding:18px 20px 22px;margin-top:4px}
+.dict-term{font-family:'Cinzel',serif;font-size:20px;font-weight:600;color:var(--gold);margin-bottom:3px;text-transform:capitalize}
+.dict-body{font-size:17px;line-height:1.85;margin-top:12px}
+.dict-body h3{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold2);margin:16px 0 5px}
+.dict-body p{margin-bottom:9px}
+.dict-body strong{color:var(--gold2);font-weight:500}
+.dict-body em{font-style:italic}
+/* SUGGESTIONS */
+.sug-wrap{margin-top:16px}
+.sug-title{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--mu);margin-bottom:10px}
+.sug-list{display:flex;flex-wrap:wrap;gap:7px}
+.sug-btn{background:var(--s3);border:1px solid var(--gb);border-radius:20px;padding:5px 13px;font-family:'EB Garamond',serif;font-size:14px;color:var(--tx2);cursor:pointer;transition:background .15s,color .15s}
+.sug-btn:hover{background:var(--gold);color:#0D0B07}
 /* STATES */
-.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:160px;gap:10px;color:var(--muted);text-align:center;}
-.empty-icon{font-size:32px;opacity:.4;}
-.empty-hint{font-size:14px;line-height:1.6;}
-.spinner{width:28px;height:28px;border:2px solid var(--gold-dim);border-top-color:var(--gold);border-radius:50%;animation:spin .75s linear infinite;margin:30px auto;}
-@keyframes spin{to{transform:rotate(360deg);}}
-.err-box{background:rgba(192,80,64,.1);border:1px solid rgba(192,80,64,.3);border-radius:8px;padding:12px 16px;font-size:14px;color:#E08070;margin:12px 0;}
-
-/* DICTIONARY */
-.dict-form{display:flex;gap:8px;margin-bottom:20px;}
-.dict-form input{flex:1;background:var(--surface2);border:1px solid var(--gold-border);border-radius:6px;padding:9px 14px;color:var(--text);font-family:'EB Garamond',serif;font-size:15px;outline:none;transition:border-color .2s,box-shadow .2s;}
-.dict-form input::placeholder{color:var(--muted);}
-.dict-form input:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-dim);}
-.dict-result{background:var(--surface2);border:1px solid var(--gold-border);border-radius:10px;padding:20px 20px 24px;display:none;}
-.dict-result.visible{display:block;}
-.dict-term{font-family:'Cinzel',serif;font-size:20px;font-weight:600;color:var(--gold);margin-bottom:4px;}
-.dict-meta{font-size:13px;color:var(--muted);margin-bottom:16px;font-style:italic;}
-.dict-body{font-size:17px;line-height:1.85;color:var(--text);}
-.dict-body h3{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold2);margin:18px 0 6px;}
-.dict-body p{margin-bottom:10px;}
-.dict-body ul{padding-left:18px;margin-bottom:10px;}
-.dict-body li{margin-bottom:4px;}
-.dict-body strong{color:var(--gold2);font-weight:500;}
-.dict-cursor{display:inline-block;width:2px;height:1em;background:var(--gold);vertical-align:middle;animation:blink .8s steps(1) infinite;}
-@keyframes blink{50%{opacity:0;}}
-
-/* PWA BANNER */
-#pwa-banner{display:none;flex-shrink:0;background:linear-gradient(135deg,#1c1400,#201800);border-top:1px solid var(--gold-border);padding:9px 16px;align-items:center;gap:10px;}
-#pwa-banner p{flex:1;margin:0;font-size:13px;color:var(--text);}
-#pwa-banner strong{color:var(--gold);}
-#pwa-banner button{background:var(--gold);color:#0D0B07;border:none;border-radius:6px;padding:6px 14px;font-family:'Cinzel',serif;font-weight:600;font-size:11px;letter-spacing:.06em;cursor:pointer;white-space:nowrap;}
-#pwa-dismiss{background:none!important;color:var(--muted)!important;font-size:16px!important;padding:4px 6px!important;}
-
-.ornament{text-align:center;color:var(--gold-border);font-size:18px;margin:20px 0 16px;letter-spacing:.3em;}
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:160px;gap:10px;color:var(--mu);text-align:center}
+.empty-ico{font-size:32px;opacity:.4}
+.spinner{width:26px;height:26px;border:2px solid var(--gd);border-top-color:var(--gold);border-radius:50%;animation:spin .75s linear infinite;margin:30px auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+.err{background:rgba(192,80,64,.1);border:1px solid rgba(192,80,64,.3);border-radius:8px;padding:12px 15px;font-size:14px;color:#E08070;margin:10px 0}
+.ornament{text-align:center;color:var(--gb);font-size:18px;margin:18px 0 16px;letter-spacing:.3em}
+.info-box{background:var(--s2);border:1px solid var(--gb);border-radius:8px;padding:14px 16px;font-size:15px;line-height:1.7;color:var(--tx2);margin-bottom:16px}
+.info-box strong{color:var(--gold)}
+/* PWA */
+#pwa{display:none;flex-shrink:0;background:linear-gradient(135deg,#1c1400,#201800);border-top:1px solid var(--gb);padding:9px 16px;align-items:center;gap:10px}
+#pwa p{flex:1;margin:0;font-size:13px}#pwa strong{color:var(--gold)}
+#pwa-inst{background:var(--gold);color:#0D0B07;border:none;border-radius:6px;padding:6px 13px;font-family:'Cinzel',serif;font-weight:600;font-size:11px;cursor:pointer}
+#pwa-x{background:none;color:var(--mu);border:none;font-size:16px;padding:4px 6px;cursor:pointer}
 </style>
 </head>
 <body>
 <div class="app">
 
-<!-- HEADER: solo logo -->
-<header>
+<div class="hdr">
   <div class="brand">
-    <span class="brand-emoji">⛺</span>
-    <div class="brand-text">
-      <h1>Tenda di Convegno</h1>
-      <p>Meditazione Pentecostale</p>
-    </div>
+    <span style="font-size:22px;flex-shrink:0">⛺</span>
+    <div><h1>Tenda di Convegno</h1><p>Meditazione Pentecostale</p></div>
   </div>
-</header>
+  <label class="loader-btn" id="lbl-load" title="Carica il file kjv_bbl.mybible per attivare i numeri Strong">
+    <div class="dot" id="load-dot"></div>
+    <span id="load-txt">Strong's</span>
+    <input type="file" accept=".mybible,.db,.sqlite" style="display:none" id="file-input">
+  </label>
+</div>
 
-<!-- TABS -->
 <div class="tabs">
-  <button class="tab active" onclick="showTab('home')">⛺ Oggi</button>
-  <button class="tab" onclick="showTab('bibbia')">📖 Bibbia</button>
-  <button class="tab" onclick="showTab('dizionario')">📚 Dizionario</button>
+  <button class="tab on" id="tab-home"   onclick="showTab('home')">⛺ Oggi</button>
+  <button class="tab"    id="tab-bibbia" onclick="showTab('bibbia')">📖 Bibbia</button>
+  <button class="tab"    id="tab-diz"    onclick="showTab('diz')">📚 Dizionario</button>
 </div>
 
-<!-- BARRA RICERCA BIBBIA — visibile solo nella scheda Bibbia -->
-<div class="bible-searchbar" id="bible-searchbar">
-  <input id="refInput" type="text" placeholder="Es: Giovanni 3 · Salmi 23 · Romani 8…"
-         autocomplete="off" autocorrect="off" spellcheck="false">
-  <button class="btn" onclick="searchPassage()">CERCA</button>
+<div class="sbar" id="sbar-bibbia">
+  <input id="bIn" placeholder="Es: Giovanni 3 · Salmi 23 · Romani 8:28-39…" autocomplete="off" autocorrect="off" spellcheck="false" onkeypress="if(event.key==='Enter')searchBible()">
+  <button class="btn" onclick="searchBible()">CERCA</button>
+</div>
+<div class="sbar" id="sbar-diz">
+  <input id="dIn" placeholder="Es: grazia, fede, espiazione, parousia…" autocomplete="off" spellcheck="false" onkeypress="if(event.key==='Enter')searchDict()">
+  <button class="btn" onclick="searchDict()">CERCA</button>
 </div>
 
-<!-- PANELS -->
 <div class="panels">
 
   <!-- HOME -->
-  <div class="panel active" id="panel-home">
-    <div class="votd-card">
-      <div class="votd-label">
-        Versetto del Giorno
-        <span class="votd-date" id="votd-date"></span>
-      </div>
-      <div id="votd-text" class="votd-text">Caricamento…</div>
-      <div id="votd-ref" class="votd-ref"></div>
+  <div class="panel on" id="p-home">
+    <div class="votd">
+      <div class="votd-lbl">Versetto del Giorno <span class="votd-date" id="vdate"></span></div>
+      <div class="votd-txt" id="vtxt"></div>
+      <div class="votd-ref" id="vref"></div>
     </div>
     <div class="ornament">✦ ✦ ✦</div>
-    <div class="section-title">Come usare l'app</div>
-    <p style="font-size:16px;color:var(--muted);line-height:1.8;margin-bottom:10px;">
-      Usa la scheda <strong style="color:var(--text2)">📖 Bibbia</strong> per cercare qualsiasi passo —
-      es. <em style="color:var(--gold2)">Giovanni 3</em> o <em style="color:var(--gold2)">Salmi 23:1-6</em>.
+    <div class="stitle">Come usare l'app</div>
+    <p style="font-size:16px;color:var(--mu);line-height:1.8;margin-bottom:10px">
+      <strong style="color:var(--tx2)">📖 Bibbia</strong> — cerca qualsiasi passo es.
+      <em style="color:var(--gold2)">Giovanni 3</em> o <em style="color:var(--gold2)">Salmi 23:1-6</em>.
+      Carica il file <strong style="color:var(--gold2)">kjv_bbl.mybible</strong> in alto per vedere anche la King James con i numeri Strong cliccabili.
     </p>
-    <p style="font-size:16px;color:var(--muted);line-height:1.8;">
-      Usa la scheda <strong style="color:var(--text2)">📚 Dizionario</strong> per approfondire
-      termini teologici come <em style="color:var(--gold2)">grazia</em>, <em style="color:var(--gold2)">espiazione</em>,
-      <em style="color:var(--gold2)">parousia</em>…
+    <p style="font-size:16px;color:var(--mu);line-height:1.8">
+      <strong style="color:var(--tx2)">📚 Dizionario</strong> — approfondisci termini come
+      <em style="color:var(--gold2)">grazia</em>, <em style="color:var(--gold2)">espiazione</em>, <em style="color:var(--gold2)">parousia</em>…
     </p>
   </div>
 
   <!-- BIBBIA -->
-  <div class="panel" id="panel-bibbia">
-    <div id="bible-content">
-      <div class="empty-state">
-        <div class="empty-icon">📖</div>
-        <div class="empty-hint">Usa la barra di ricerca qui sopra<br>per cercare un passo biblico.</div>
+  <div class="panel" id="p-bibbia">
+    <div id="bcontent">
+      <div class="empty">
+        <div class="empty-ico">📖</div>
+        <div style="font-size:14px;line-height:1.6">Usa la barra qui sopra<br>per cercare un passo biblico.</div>
       </div>
     </div>
   </div>
 
   <!-- DIZIONARIO -->
-  <div class="panel" id="panel-dizionario">
-    <div class="section-title">Dizionario Biblico</div>
-    <div class="dict-form">
-      <input id="dictInput" type="text" placeholder="Es: grazia, espiazione, parousia…"
-             autocomplete="off" spellcheck="false">
-      <button class="btn" onclick="lookupTerm()">CERCA</button>
-    </div>
-    <div class="empty-state" id="dict-empty">
-      <div class="empty-icon">📚</div>
-      <div class="empty-hint">Inserisci un termine biblico o teologico<br>per ottenere una spiegazione approfondita.</div>
-    </div>
-    <div class="dict-result" id="dict-result">
-      <div class="dict-term" id="dict-term"></div>
-      <div class="dict-meta" id="dict-meta"></div>
-      <div class="dict-body" id="dict-body"></div>
+  <div class="panel" id="p-diz">
+    <div class="stitle">Dizionario Biblico</div>
+    <div id="dcontent">
+      <div class="empty">
+        <div class="empty-ico">📚</div>
+        <div style="font-size:14px;line-height:1.6">Cerca un termine oppure scegli<br>uno dei suggerimenti qui sotto.</div>
+      </div>
+      <div class="sug-wrap">
+        <div class="sug-title">Termini disponibili</div>
+        <div class="sug-list" id="sug-main"></div>
+      </div>
     </div>
   </div>
 
 </div>
 
-<div id="pwa-banner">
-  <p>📲 <strong>Installa Tenda</strong> per averla sempre a portata di mano</p>
-  <button id="pwa-install">Installa</button>
-  <button id="pwa-dismiss">✕</button>
+<!-- STRONG POPUP -->
+<div class="popup-overlay" id="popup-overlay" onclick="closePopup(event)">
+  <div class="popup" id="popup" style="position:relative">
+    <button class="popup-close" onclick="closePopup()">✕</button>
+    <div class="popup-num" id="pop-num"></div>
+    <div class="popup-trans" id="pop-trans"></div>
+    <div class="popup-body" id="pop-body"></div>
+  </div>
 </div>
 
-</div><!-- /app -->
+<div id="pwa">
+  <p>📲 <strong>Installa Tenda</strong> per averla sempre a portata di mano</p>
+  <button id="pwa-inst">Installa</button>
+  <button id="pwa-x">✕</button>
+</div>
 
+</div>
+
+<!-- sql.js per leggere il file .mybible (SQLite) nel browser -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/sql-wasm.js"></script>
 <script>
-// ═══════════════════════════════════════════════════
-//  TABS
-// ═══════════════════════════════════════════════════
-const tabs = document.querySelectorAll('.tab');
-const panels = document.querySelectorAll('.panel');
-const bibleSearchbar = document.getElementById('bible-searchbar');
+// ═══════════════════════════════════════════════
+// GLOBALS
+// ═══════════════════════════════════════════════
+let sqlDB = null;
+let sqlReady = false;
 
-function showTab(name) {
-  const names = ['home','bibbia','dizionario'];
-  const idx = names.indexOf(name);
-  tabs.forEach((t,i) => t.classList.toggle('active', i===idx));
-  panels.forEach((p,i) => p.classList.toggle('active', i===idx));
-  // mostra/nasconde la search bar bibbia
-  bibleSearchbar.classList.toggle('visible', name === 'bibbia');
+// ═══════════════════════════════════════════════
+// CARICA DB — prima prova dal server, poi da file
+// ═══════════════════════════════════════════════
+function setLoaderState(state, text) {
+  const lbl = document.getElementById('lbl-load');
+  const dot = document.getElementById('load-dot');
+  const txt = document.getElementById('load-txt');
+  txt.textContent = text;
+  if (state === 'loading') { dot.style.background = 'var(--gold)'; lbl.classList.remove('loaded'); }
+  if (state === 'ok')      { dot.style.background = '#5fba6f';     lbl.classList.add('loaded'); }
+  if (state === 'error')   { dot.style.background = 'var(--mu)';   lbl.classList.remove('loaded'); }
 }
 
-// ═══════════════════════════════════════════════════
-//  VERSETTO DEL GIORNO
-// ═══════════════════════════════════════════════════
-const VOTD = [
+async function openDB(arrayBuffer) {
+  const arr = new Uint8Array(arrayBuffer);
+  sqlDB = new window._SQL.Database(arr);
+  const res = sqlDB.exec('SELECT COUNT(*) FROM Bible');
+  const count = res[0].values[0][0];
+  setLoaderState('ok', `✓ Strong's`);
+  console.log(`MyBible caricato: ${count} versetti`);
+}
+
+// Inizializza sql.js e poi tenta il fetch automatico dal server
+initSqlJs({ locateFile: f => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/${f}` })
+  .then(async SQL => {
+    window._SQL = SQL;
+    sqlReady = true;
+    // Tenta caricamento automatico dal server (funziona su GitHub Pages)
+    setLoaderState('loading', 'Strong\'s…');
+    try {
+      const res = await fetch('./kjv_bbl.mybible');
+      if (!res.ok) throw new Error('file non trovato sul server');
+      const buf = await res.arrayBuffer();
+      await openDB(buf);
+    } catch(e) {
+      // File non sul server: mostra bottone per caricamento manuale
+      setLoaderState('error', 'Carica Strong\'s');
+      console.info('Auto-fetch fallito, usa il bottone per caricare manualmente:', e.message);
+    }
+  })
+  .catch(e => {
+    setLoaderState('error', 'Strong\'s');
+    console.warn('sql.js non caricato:', e);
+  });
+
+// Fallback manuale (se il file non è sul server)
+document.getElementById('file-input').addEventListener('change', async function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  if (!sqlReady) { setLoaderState('error', 'Non pronto'); return; }
+  setLoaderState('loading', 'Caricamento…');
+  try {
+    const buf = await file.arrayBuffer();
+    await openDB(buf);
+  } catch(err) {
+    setLoaderState('error', 'Riprova');
+    console.error('Errore caricamento:', err.message);
+  }
+});
+
+// ═══════════════════════════════════════════════
+// TABS
+// ═══════════════════════════════════════════════
+function showTab(name) {
+  ['home','bibbia','diz'].forEach(n => {
+    document.getElementById('tab-'+(n==='home'?'home':n==='bibbia'?'bibbia':'diz')).classList.toggle('on', n===name);
+    document.getElementById('p-'+n).classList.toggle('on', n===name);
+  });
+  document.getElementById('sbar-bibbia').classList.toggle('show', name==='bibbia');
+  document.getElementById('sbar-diz').classList.toggle('show', name==='diz');
+}
+
+// ═══════════════════════════════════════════════
+// VOTD
+// ═══════════════════════════════════════════════
+const VOTD=[
   ["Giovanni 3:16","Poiché Iddio ha tanto amato il mondo, che ha dato il suo unigenito Figliuolo, acciocché chiunque crede in lui non perisca, ma abbia vita eterna."],
   ["Filippesi 4:13","Io posso ogni cosa in Cristo che mi fortifica."],
   ["Geremia 29:11","Poiché io so i pensieri che medito a vostro riguardo, dice l'Eterno: pensieri di pace e non di male, per darvi un avvenire e una speranza."],
@@ -284,4 +361,375 @@ const VOTD = [
   ["Naum 1:7","L'Eterno è buono, è un rifugio nel giorno della distretta, e conosce quelli che confidano in lui."],
   ["Salmi 55:22","Getta il tuo peso sopra l'Eterno, ed egli ti sosterrà; egli non permetterà mai che il giusto sia smosso."],
   ["Deuteronomio 31:6","Sii forte e coraggioso; non temere e non ti spaventare di loro; poiché l'Eterno Iddio tuo è colui che cammina con te."],
-  ["Giovanni 8:32","E conoscerete la verità, e la verità vi f
+  ["Giovanni 8:32","E conoscerete la verità, e la verità vi farà liberi."],
+  ["Salmi 16:8","Io ho posto l'Eterno sempre davanti a me; poiché egli è alla mia destra, io non sarò smosso."],
+];
+(function(){
+  const n=new Date();
+  const days=['Domenica','Lunedì','Martedì','Mercoledì','Giovedì','Venerdì','Sabato'];
+  const months=['gennaio','febbraio','marzo','aprile','maggio','giugno','luglio','agosto','settembre','ottobre','novembre','dicembre'];
+  document.getElementById('vdate').textContent=days[n.getDay()]+' '+n.getDate()+' '+months[n.getMonth()]+' '+n.getFullYear();
+  const day=Math.floor((n-new Date(n.getFullYear(),0,0))/86400000);
+  const v=VOTD[day%VOTD.length];
+  document.getElementById('vtxt').textContent=v[1];
+  document.getElementById('vref').textContent='— '+v[0];
+})();
+
+// ═══════════════════════════════════════════════
+// BIBLE BOOK MAP (IT → num, label)
+// ═══════════════════════════════════════════════
+const BOOKS=[
+  [1,['genesi','gen'],'Genesi'],[2,['esodo'],'Esodo'],[3,['levitico','lev'],'Levitico'],
+  [4,['numeri','num'],'Numeri'],[5,['deuteronomio','deut'],'Deuteronomio'],
+  [6,['giosue','gios'],'Giosuè'],[7,['giudici','giud'],'Giudici'],[8,['rut'],'Rut'],
+  [9,['1 samuele','1sam'],'1 Samuele'],[10,['2 samuele','2sam'],'2 Samuele'],
+  [11,['1 re','i re'],'1 Re'],[12,['2 re','ii re'],'2 Re'],
+  [13,['1 cronache','1cron'],'1 Cronache'],[14,['2 cronache','2cron'],'2 Cronache'],
+  [15,['esdra'],'Esdra'],[16,['neemia'],'Neemia'],[17,['ester'],'Ester'],[18,['giobbe'],'Giobbe'],
+  [19,['salmi','salmo','sal'],'Salmi'],[20,['proverbi','prov'],'Proverbi'],
+  [21,['ecclesiaste','eccl'],'Ecclesiaste'],[22,['cantico dei cantici','cantico','cant'],'Cantico'],
+  [23,['isaia'],'Isaia'],[24,['geremia','ger'],'Geremia'],[25,['lamentazioni','lam'],'Lamentazioni'],
+  [26,['ezechiele'],'Ezechiele'],[27,['daniele','dan'],'Daniele'],[28,['osea'],'Osea'],
+  [29,['gioele'],'Gioele'],[30,['amos'],'Amos'],[31,['abdia','abd'],'Abdia'],[32,['giona'],'Giona'],
+  [33,['michea','mic'],'Michea'],[34,['naum'],'Naum'],[35,['abacuc','abac'],'Abacuc'],
+  [36,['sofonia','sof'],'Sofonia'],[37,['aggeo','agg'],'Aggeo'],[38,['zaccaria','zacc'],'Zaccaria'],
+  [39,['malachia','mal'],'Malachia'],[40,['matteo','mat'],'Matteo'],[41,['marco','mar'],'Marco'],
+  [42,['luca'],'Luca'],[43,['giovanni','gv'],'Giovanni'],[44,['atti'],'Atti'],
+  [45,['romani','rom'],'Romani'],[46,['1 corinzi','1cor'],'1 Corinzi'],[47,['2 corinzi','2cor'],'2 Corinzi'],
+  [48,['galati','gal'],'Galati'],[49,['efesini'],'Efesini'],[50,['filippesi','fil'],'Filippesi'],
+  [51,['colossesi','col'],'Colossesi'],[52,['1 tessalonicesi','1ts'],'1 Tessalonicesi'],
+  [53,['2 tessalonicesi','2ts'],'2 Tessalonicesi'],[54,['1 timoteo','1tim'],'1 Timoteo'],
+  [55,['2 timoteo','2tim'],'2 Timoteo'],[56,['tito'],'Tito'],[57,['filemone'],'Filemone'],
+  [58,['ebrei'],'Ebrei'],[59,['giacomo','giac'],'Giacomo'],
+  [60,['1 pietro','1pt'],'1 Pietro'],[61,['2 pietro','2pt'],'2 Pietro'],
+  [62,['1 giovanni','1gv'],'1 Giovanni'],[63,['2 giovanni','2gv'],'2 Giovanni'],
+  [64,['3 giovanni','3gv'],'3 Giovanni'],[65,['giuda'],'Giuda'],[66,['apocalisse','apoc'],'Apocalisse'],
+];
+
+function norm(s){ return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim(); }
+
+function parseRef(raw){
+  const lo=norm(raw);
+  const cands=[];
+  for(const [num,aliases,label] of BOOKS)
+    for(const a of aliases) cands.push({num,label,alias:a});
+  cands.sort((a,b)=>b.alias.length-a.alias.length);
+  for(const {num,label,alias} of cands){
+    if(lo===alias||lo.startsWith(alias+' ')||lo.startsWith(alias+':')){
+      const rest=lo.slice(alias.length).trim();
+      const m=rest.match(/^(\d+)(?:[:\s,.](\d+)(?:\s*[-–]\s*(\d+))?)?/);
+      if(!m) return null;
+      return{num,label,ch:parseInt(m[1]),vf:m[2]?parseInt(m[2]):null,vt:m[3]?parseInt(m[3]):null};
+    }
+  }
+  return null;
+}
+
+// ═══════════════════════════════════════════════
+// PARSE KJV MYBIBLE VERSE → tokens with Strongs
+// ═══════════════════════════════════════════════
+function parseKjvVerse(text) {
+  // Rimuove note (RF...Rf)
+  text = text.replace(/<RF>[\s\S]*?<Rf>/g, '');
+  text = text.replace(/<CM>/g, '');
+  // Rimuove tag di formattazione ma mantiene testo
+  text = text.replace(/<FI>([\s\S]*?)<Fi>/g, '$1');
+  text = text.replace(/<FR>([\s\S]*?)<Fr>/g, '$1');
+  text = text.replace(/<[A-Za-z/][^>]*>/g, ''); // altri tag
+
+  // Ora il testo è tipo: "In the beginning<WH7225> God<WH430> ..."
+  // Ricostruisce: ogni parola(e) + strong tag -> token
+  const tokens = [];
+  // Separa in segmenti: testo + eventuali strong tags
+  const parts = text.split(/(<W[GHXx]\d+[xX]?>)/);
+  
+  let currentWords = '';
+  let currentStrongs = [];
+  
+  for (let i = 0; i < parts.length; i++) {
+    const p = parts[i];
+    if (/^<W[GHXx]\d+/.test(p)) {
+      // È un tag Strong
+      const m = p.match(/W([GH])(\d+)/i);
+      if (m) currentStrongs.push((m[1].toUpperCase()==='G'?'G':'H') + m[2]);
+      // Guarda se il prossimo è ancora un Strong
+      const nextIsStrong = i+1 < parts.length && /^<W[GHXx]\d+/.test(parts[i+1]);
+      if (!nextIsStrong && currentWords.trim()) {
+        // Emetti token
+        tokens.push({ w: currentWords.trim(), s: [...currentStrongs] });
+        currentWords = '';
+        currentStrongs = [];
+      }
+    } else {
+      // È testo normale
+      if (currentStrongs.length > 0 && currentWords.trim()) {
+        // I strong precedenti si riferivano a parole senza testo esplicito (strong "floating")
+        // le associamo al testo attuale o le saltiamo
+        currentStrongs = [];
+      }
+      currentWords += p;
+    }
+  }
+  // Eventuale testo rimanente senza strong
+  if (currentWords.trim()) {
+    tokens.push({ w: currentWords.trim(), s: [] });
+  }
+  
+  return tokens;
+}
+
+// Ricostruisce HTML per un versetto KJV con Strong cliccabili
+function renderKjvTokens(tokens) {
+  return tokens.map(t => {
+    const word = t.w.replace(/\s+/g,' ');
+    if (!t.s || t.s.length === 0) return word;
+    const sNums = t.s.join(',');
+    const sup = t.s.map(s => `<sup>${s}</sup>`).join('');
+    return `<span class="sw" onclick="showStrong('${sNums}')">${word}${sup}</span>`;
+  }).join(' ');
+}
+
+// ═══════════════════════════════════════════════
+// STRONG POPUP
+// ═══════════════════════════════════════════════
+const strongCache = {};
+
+async function showStrong(numsStr) {
+  const nums = numsStr.split(',');
+  const num = nums[0]; // mostriamo il primo (principale)
+  
+  document.getElementById('popup-overlay').classList.add('show');
+  document.getElementById('pop-num').textContent = num;
+  document.getElementById('pop-trans').textContent = '';
+  document.getElementById('pop-body').innerHTML = '<div class="popup-loading">Caricamento definizione…</div>';
+
+  if (strongCache[num]) {
+    renderStrongData(strongCache[num], num, nums);
+    return;
+  }
+
+  try {
+    // API bolls.life per il lessico Strong
+    const lang = num.startsWith('G') ? 'GRKLXX' : 'HEBOT';
+    const res = await fetch(`https://bolls.life/get-strong-number/?strong=${num}`);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    strongCache[num] = data;
+    renderStrongData(data, num, nums);
+  } catch(e) {
+    // Fallback: link diretto a Blue Letter Bible
+    document.getElementById('pop-body').innerHTML = `
+      <p style="color:var(--mu);font-size:15px">Definizione non disponibile offline.</p>
+      <a class="popup-ext" href="https://www.blueletterbible.org/lexicon/${num}/kjv/wlc/0-1/" target="_blank">
+        Apri in Blue Letter Bible ↗
+      </a>`;
+  }
+}
+
+function renderStrongData(data, num, allNums) {
+  const trans = data.transliteration || data.translit || '';
+  const orig = data.original_word || data.greek || data.hebrew || '';
+  const meaning = data.definition || data.short_definition || data.strongs_def || '';
+  const usage = data.usage || '';
+
+  document.getElementById('pop-trans').textContent = [orig, trans].filter(Boolean).join(' · ');
+  
+  let html = '';
+  if (meaning) html += `<p>${meaning}</p>`;
+  if (usage) html += `<p><strong>Uso:</strong> ${usage}</p>`;
+  if (allNums.length > 1) {
+    html += `<p style="margin-top:8px;font-size:14px;color:var(--mu)">Altri numeri in questa parola: ${allNums.slice(1).map(n=>`<span class="sw" onclick="showStrong('${n}')" style="font-size:14px">${n}</span>`).join(', ')}</p>`;
+  }
+  html += `<a class="popup-ext" href="https://www.blueletterbible.org/lexicon/${num}/kjv/wlc/0-1/" target="_blank">Approfondisci in Blue Letter Bible ↗</a>`;
+  
+  document.getElementById('pop-body').innerHTML = html || `<p style="color:var(--mu)">Nessuna definizione disponibile.</p><a class="popup-ext" href="https://www.blueletterbible.org/lexicon/${num}/kjv/wlc/0-1/" target="_blank">Apri in Blue Letter Bible ↗</a>`;
+}
+
+function closePopup(e) {
+  if (e && e.target !== document.getElementById('popup-overlay')) return;
+  document.getElementById('popup-overlay').classList.remove('show');
+}
+
+// ═══════════════════════════════════════════════
+// SEARCH BIBLE
+// ═══════════════════════════════════════════════
+async function searchBible() {
+  const raw = document.getElementById('bIn').value.trim();
+  if (!raw) return;
+  const el = document.getElementById('bcontent');
+  el.innerHTML = '<div class="spinner"></div>';
+  showTab('bibbia');
+
+  const p = parseRef(raw);
+  if (!p) {
+    el.innerHTML = '<div class="err">⚠️ Riferimento non riconosciuto.<br>Esempi: <em>Giovanni 3</em> · <em>Salmi 23:1-6</em> · <em>Romani 8</em></div>';
+    return;
+  }
+
+  try {
+    // Carica Riveduta Luzzi via API
+    const res = await fetch(`https://api.getbible.net/v2/riveduta/${p.num}/${p.ch}.json`);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    let vs = Array.isArray(data.verses) ? data.verses : [];
+    if (p.vf) { const vt=p.vt||p.vf; vs=vs.filter(v=>v.verse>=p.vf&&v.verse<=vt); }
+    if (!vs.length) { el.innerHTML='<div class="err">Nessun versetto trovato.</div>'; return; }
+
+    const rangeStr = p.vf ? `${p.ch}:${p.vf}${p.vt&&p.vt!==p.vf?'–'+p.vt:''}` : String(p.ch);
+    let html = `<div class="ch-head">${p.label} ${rangeStr} — Riveduta Luzzi 1927</div>`;
+    vs.forEach(v => {
+      html += `<div class="verse"><span class="vnum">${v.verse}</span><span class="vtxt">${v.text}</span></div>`;
+    });
+
+    // Se MyBible caricato: aggiungi KJV con Strong's
+    if (sqlDB) {
+      html += renderKjvSection(p, vs);
+    } else {
+      html += `<div class="info-box" style="margin-top:20px">
+        💡 Carica il file <strong>kjv_bbl.mybible</strong> in alto per vedere la <strong>King James</strong> con i numeri Strong cliccabili.
+      </div>`;
+    }
+
+    el.innerHTML = html;
+    document.getElementById('p-bibbia').scrollTop = 0;
+
+  } catch(e) {
+    el.innerHTML = `<div class="err">⚠️ Errore nel caricamento (${e.message}).<br>Verifica la connessione.</div>`;
+  }
+}
+
+function renderKjvSection(p, rivVs) {
+  let html = `<div class="kjv-section">
+    <div class="kjv-label">King James Version · Numeri Strong cliccabili</div>`;
+
+  // Versetti da caricare dal DB
+  const verseNums = rivVs.map(v => v.verse);
+  const vIn = verseNums.join(',');
+  
+  try {
+    const stmt = sqlDB.prepare(
+      `SELECT Verse, Scripture FROM Bible WHERE Book=? AND Chapter=? AND Verse IN (${verseNums.map(()=>'?').join(',')}) ORDER BY Verse`
+    );
+    stmt.bind([p.num, p.ch, ...verseNums]);
+    while (stmt.step()) {
+      const [verse, text] = stmt.getAsObject()
+        ? [stmt.getAsObject().Verse, stmt.getAsObject().Scripture]
+        : [null, null];
+      if (!verse || !text) continue;
+      const tokens = parseKjvVerse(text);
+      const rendered = renderKjvTokens(tokens);
+      html += `<div class="kjv-verse"><span class="kjv-vnum">${verse}</span><span class="kjv-txt">${rendered}</span></div>`;
+    }
+    stmt.free();
+  } catch(e) {
+    html += `<div class="err">Errore lettura MyBible: ${e.message}</div>`;
+  }
+
+  html += '</div>';
+  return html;
+}
+
+// ═══════════════════════════════════════════════
+// DIZIONARIO LOCALE
+// ═══════════════════════════════════════════════
+const DICT = {
+  grazia:{s:"Ebraico <strong>ḥen</strong> (favore gratuito), greco <strong>charis</strong> (dono immeritato). La grazia è il cuore del Vangelo.",at:"Noè «trovò grazia agli occhi dell'Eterno» (Gen 6:8). Dio rivela il suo carattere: «misericordioso, clemente, lento all'ira e ricco in bontà» (Es 34:6). La grazia precede ogni merito umano.",nt:"Paolo pone la grazia al cuore del Vangelo: <em>«Per grazia siete stati salvati mediante la fede; e ciò non viene da voi; è il dono di Dio»</em> (Ef 2:8). La grazia abbonda laddove abbondò il peccato (Rm 5:20). In 2 Cor 12:9: «la mia grazia ti è sufficiente».",t:"La grazia è l'atto sovrano con cui Dio si volge verso il peccatore con amore immeritato, lo perdona, lo giustifica e lo trasforma. È la fonte della salvezza e il fondamento di tutta la vita cristiana.",og:"Il credente vive «sotto la grazia» (Rm 6:14): risponde all'amore di Dio con gratitudine e obbedienza. La grazia non elimina l'impegno etico, ma lo rende possibile e gioioso."},
+  fede:{s:"Ebraico <strong>emunah</strong> (fermezza, fedeltà), greco <strong>pistis</strong> (fiducia, credenza, lealtà). Non semplice assenso intellettuale ma fiducia totale.",at:"Abraamo credette a Dio e gli fu imputato a giustizia (Gen 15:6). La fede si manifesta nell'obbedienza fiduciosa. Il profeta Abacuc: «Il giusto vivrà per la sua fede» (Ab 2:4).",nt:"Eb 11:1: «la fede è certezza delle cose sperate, dimostrazione di quelle non viste». Ef 2:8: mezzo della salvezza. Giacomo: la fede vera produce opere (Gc 2:17). Giovanni: relazione personale con Cristo.",t:"La vera fede ha tre dimensioni: <em>notitia</em> (conoscenza), <em>assensus</em> (assenso) e <em>fiducia</em> (abbandono personale a Cristo). Non è forza di volontà umana ma risposta allo Spirito Santo.",og:"La fede si nutre della Parola (Rm 10:17). «Senza fede è impossibile piacergli» (Eb 11:6). Il credente cammina «per fede, non per visione» (2 Cor 5:7)."},
+  salvezza:{s:"Ebraico <strong>yeshu'ah</strong>, greco <strong>soteria</strong> (liberazione totale — corporea, spirituale, eterna).",at:"Dio libera Israele dall'Egitto (Es 14–15). I profeti anticipano una salvezza universale (Is 45:22; 49:6). «La salvezza appartiene all'Eterno» (Sal 3:8).",nt:"Salvezza passata (giustificazione, Rm 5:1), presente (santificazione, Fil 2:12) e futura (glorificazione, Rm 8:23). Abbraccia perdono, riconciliazione, rigenerazione, vita eterna.",t:"Opera esclusiva di Dio: il Padre la pianifica, il Figlio la compie, lo Spirito la applica. L'uomo non può contribuirvi con opere proprie (Ef 2:9).",og:"Il credente è «salvato», «si sta salvando» e «sarà salvato». Genera gratitudine, adorazione e impegno missionario (Rm 10:14–15)."},
+  espiazione:{s:"Ebraico <strong>kippùr</strong> (coprire, cancellare), greco <strong>hilasmos</strong> (propiziazione). Rimozione della colpa e della conseguente ira divina.",at:"Sistema sacrificale: il sangue copre il peccato. Yom Kippur (Lv 16): il sommo sacerdote entra nel Santo dei Santi con il sangue per tutto Israele.",nt:"Gesù compie quanto i sacrifici prefiguravano. <em>«Egli è propiziazione per i nostri peccati»</em> (1 Gv 2:2). «Senza spargimento di sangue non vi è remissione» (Eb 9:22).",t:"Risolve il problema della santità di Dio di fronte al peccato umano. La croce è dove giustizia e misericordia si incontrano (Sal 85:10). Cristo è insieme sommo sacerdote e vittima.",og:"Per il credente: pace con Dio (Rm 5:1), coscienza purificata (Eb 10:22), libertà dalla condanna (Rm 8:1). Vita cristiana come risposta grata al prezzo pagato."},
+  parousia:{s:"Greco <strong>parousia</strong> (presenza, venuta, arrivo ufficiale di un re). Il ritorno glorioso di Cristo alla fine dei tempi.",at:"Dn 7:13–14: «Figlio dell'uomo» che viene sulle nuvole. «Giorno dell'Eterno» dei profeti (Gl 2:31; Ml 4:1–5).",nt:"Mt 24:30: «vedrete il Figlio dell'uomo venire sulle nuvole con potenza e grande gloria». 1 Ts 4:13–17: i morti in Cristo risorgeranno; i viventi saranno trasformati (1 Cor 15:51–52).",t:"Speranza beata della Chiesa (Tt 2:13). Segna il compimento del regno di Dio, il giudizio universale, la resurrezione, la nuova creazione.",og:"Purifica il credente (1 Gv 3:2–3), motiva la missione (Mt 24:14), consola nelle sofferenze. «Vieni, Signore Gesù!» (Ap 22:20)."},
+  shalom:{s:"Ebraico <strong>shalom</strong> (integrità, completezza, benessere totale). Non semplice assenza di guerra ma pienezza di vita.",at:"Il dono di Dio ad Israele: «L'Eterno conceda la pace» (Nm 6:26). Il re messianico è «Principe della pace» (Is 9:5). Isaia anticipa un regno di shalom totale (Is 11:1–9).",nt:"Gesù dona la pace che il mondo non può dare (Gv 14:27). Riconciliazione mediante il sangue della croce (Col 1:20). Paolo saluta sempre con «grazia e pace».",t:"Descrive lo stato di chi è in giusta relazione con Dio, il prossimo e il creato. Fine ultimo della redenzione. «La pace di Dio... guarderà i vostri cuori» (Fil 4:7).",og:"Il credente è chiamato a costruire shalom nel matrimonio, nella famiglia, nella chiesa, nella società (Mt 5:9)."},
+  pentecoste:{s:"Greco <strong>Pentekostē</strong> (cinquantesimo giorno). Festa ebraica Shavuot: cinquanta giorni dopo la Pasqua.",at:"Festa del raccolto (Lv 23:15–21). Tradizione rabbinica: dono della Torah al Sinai. Gioele profetizza l'effusione dello Spirito (Gl 2:28–32).",nt:"At 2: lo Spirito scende come lingue di fuoco. Pietro cita Gioele. Tremila si convertono: nasce la Chiesa. Compimento della nuova alleanza.",t:"Passaggio dall'era della Legge all'era dello Spirito. La Legge scritta nel cuore (Ger 31:31–33). Lo Spirito: presenza permanente di Dio nella Chiesa (1 Cor 3:16).",og:"Ogni credente è tempio dello Spirito. I doni edificano la Chiesa; il frutto (Gal 5:22–23) trasforma il carattere."},
+  redenzione:{s:"Ebraico <strong>ga'al/padah</strong> (riscattare pagando un prezzo), greco <strong>apolutrosis</strong> (liberazione mediante riscatto).",at:"Il go'el (parente redentore) riscatta dalla schiavitù (Lv 25:25; Rt 4). Dio redime Israele dall'Egitto (Es 6:6) e da Babilonia (Is 43:1).",nt:"«Il Figlio dell'uomo è venuto per dare la sua vita in riscatto per molti» (Mt 20:28). «La redenzione mediante il suo sangue, il perdono dei peccati» (Ef 1:7).",t:"Presuppone schiavitù, richiede riscatto, ottiene liberazione. Il prezzo: sangue di Cristo (1 Pt 1:18–19). Il risultato: appartenenza a Dio. «Siete stati comprati a caro prezzo» (1 Cor 6:20).",og:"Il redento non vive più per sé ma per Cristo (2 Cor 5:15). La redenzione passata garantisce quella futura: liberazione del corpo alla risurrezione (Rm 8:23)."},
+  giustificazione:{s:"Greco <strong>dikaioo</strong> (dichiarare giusto, assolvere). Termine legale: il giudice pronuncia il verdetto di innocenza.",at:"Dio è giudice giusto (Sal 7:11). Abraamo giustificato per fede (Gen 15:6). La giustizia divina ha dimensione salvifica.",nt:"«L'uomo è giustificato per fede, indipendentemente dalle opere della legge» (Rm 3:28). Atto forense istantaneo: Dio dichiara il peccatore giusto per i meriti di Cristo imputati mediante la fede.",t:"Cuore della Riforma: <em>sola fide, sola gratia, solus Christus</em>. La giustizia di Cristo imputata al credente; il peccato del credente imputato a Cristo (2 Cor 5:21).",og:"Produce pace con Dio (Rm 5:1), libertà dalla condanna (Rm 8:1), certezza della salvezza. Non è licenza al peccato ma fondamento per la santificazione."},
+  santificazione:{s:"Greco <strong>hagiasmos</strong> (separazione, purificazione progressiva). Da <em>hagios</em>: santo = separato per Dio.",at:"«Siate santi, perché io sono santo» (Lv 11:44). Dio santifica sabato (Gen 2:3), popolo (Es 19:6) e Tempio.",nt:"Opera progressiva dello Spirito Santo: trasforma a immagine di Cristo (2 Cor 3:18). Dimensione posizionale (già santi in Cristo) e progressiva (Fil 2:12–13). Strumento: la Parola (Gv 17:17).",t:"Risposta alla giustificazione. Cooperazione tra volontà umana e opera dello Spirito: «Operate... poiché è Dio che opera in voi» (Fil 2:12–13).",og:"Cammino di crescita verso la maturità. «Spogliarsi del vecchio uomo, rivestirsi del nuovo» (Ef 4:22–24). La comunità, la Parola, la sofferenza sono strumenti di santificazione."},
+  glorificazione:{s:"Greco <strong>doxazo</strong> (rivestire di gloria). La doxa (gloria) è la manifestazione della perfezione divina.",at:"La gloria di Dio riempie il Tempio (1 Re 8:11). «L'uomo è creato per la gloria di Dio» (Is 43:7).",nt:"«E quelli che ha giustificati, li ha anche glorificati» (Rm 8:30). Alla parousia: corpo mortale trasformato in corpo glorioso simile a quello di Cristo risorto (Fil 3:21; 1 Cor 15:42–44).",t:"Completa la catena aurea: elezione → chiamata → giustificazione → santificazione → glorificazione (Rm 8:29–30). Certezza assoluta del futuro del credente.",og:"«Le sofferenze presenti non sono paragonabili alla gloria futura» (Rm 8:18). Motiva la purezza e la perseveranza (1 Gv 3:3)."},
+  spirito_santo:{s:"Ebraico <strong>ruah haqodesh</strong> (vento/soffio del Santo), greco <strong>Pneuma Hagion</strong>. Terza Persona della Trinità.",at:"Attivo nella creazione (Gen 1:2), ispira i profeti (2 Sam 23:2). Gioele profetizza l'effusione universale (Gl 2:28–32).",nt:"Alla Pentecoste effuso sulla Chiesa (At 2). Il Paracleto: abita nei credenti (Gv 14:17), intercede (Rm 8:26), illumina (Gv 16:13), distribuisce i doni (1 Cor 12), santifica.",t:"Pienamente Dio, distinto ma unito al Padre e al Figlio. Non parla di sé ma glorifica Cristo (Gv 16:14).",og:"Ogni credente è tempio dello Spirito (1 Cor 3:16). Deve camminare secondo lo Spirito (Rm 8:4) e non contristarlo (Ef 4:30)."},
+  trinita:{s:"Latino <strong>trinitas</strong>. Sintesi dell'insegnamento biblico: un Dio in tre Persone.",at:"Implicita: «facciamo l'uomo» (Gen 1:26), Spirito sulla creazione (Gen 1:2). Lo Shema': «L'Eterno è uno» (Dt 6:4).",nt:"Battesimo di Gesù: Figlio nell'acqua, Spirito come colomba, voce del Padre (Mt 3:16–17). Formula battesimale trinitaria (Mt 28:19). Benedizione di 2 Cor 13:14.",t:"Un'essenza, tre Persone distinte ma inseparabili. La Trinità è la struttura della realtà divina: Dio è intrinsecamente relazione e amore.",og:"Il Padre ci ha amati, il Figlio ci ha redenti, lo Spirito ci ha trasformati. La vita cristiana è partecipazione alla vita trinitaria (2 Pt 1:4)."},
+  incarnazione:{s:"Latino <strong>incarnatio</strong>. Il Verbo eterno assume la natura umana rimanendo pienamente divino.",at:"Promesse messianiche: Is 7:14 (vergine), Mi 5:2 (Betlemme), Is 35:4 (Dio che viene).",nt:"«La Parola divenne carne e abitò fra di noi» (Gv 1:14). Cristo «svuotò sé stesso, prendendo forma di servo» (Fil 2:6–7). Calcedonia (451): due nature in una Persona.",t:"Solo un uomo può rappresentare l'umanità; solo Dio può salvarla. Cristo è il Mediatore unico (1 Tim 2:5).",og:"Rivela la dignità del corpo e della materia. Il credente è chiamato a incarnare il Vangelo nella vita quotidiana concreta."},
+  alleanza:{s:"Ebraico <strong>berit</strong> (patto solenne). Spesso suggellato col sangue.",at:"Alleanze progressive: Noè (Gen 9), Abraamo (Gen 15; 17), Mosè/Israele (Es 19–24), Davide (2 Sam 7). Geremia: nuova alleanza con la Legge nel cuore (Ger 31:31–34).",nt:"Gesù istituisce la nuova alleanza col suo sangue (Lc 22:20; 1 Cor 11:25). Alleanza migliore con promesse migliori (Eb 8:6). Cristo compie e supera le precedenti.",t:"Le alleanze mostrano Dio come partner fedele. L'iniziativa è sempre divina; la risposta umana è fede e obbedienza. La nuova alleanza è eterna e universale (Eb 13:20).",og:"Il credente è «ministro della nuova alleanza» (2 Cor 3:6). La Cena del Signore la commemora ad ogni celebrazione."},
+  resurrezione:{s:"Greco <strong>anastasis</strong> (ri-alzarsi). Non immortalità dell'anima ma rianimazione del corpo trasformato.",at:"Gb 19:26: «nella mia carne vedrò Dio». Dn 12:2: «molti si risveglieranno». Ez 37: valle di ossa aride.",nt:"La risurrezione di Gesù è il cuore del Vangelo (1 Cor 15:3–4) e garanzia della nostra: «Cristo è le primizie» (1 Cor 15:20). Alla parousia tutti risorgeranno (Gv 5:28–29).",t:"Distingue la fede cristiana dalle filosofie che svalutano la materia. Il corpo risorto: incorruttibile, glorioso, spirituale — diverso eppure continuo.",og:"Senza risurrezione «la nostra predicazione è vana» (1 Cor 15:14). La speranza trasforma il modo in cui il credente vive, soffre e muore."},
+  battesimo:{s:"Greco <strong>baptizo</strong> (immergere, sommergere). Rito iniziatico con acqua nel nome della Trinità.",at:"I lavacri rituali dell'AT prefigurano il battesimo. Il Mar Rosso (1 Cor 10:2) e la circoncisione (Col 2:11–12) sono tipi.",nt:"Gesù battezzato per solidarietà con l'umanità (Mt 3:13–17). Ordine missionario: battezzare tutti i popoli (Mt 28:19). Il credente unito alla morte e risurrezione di Cristo (Rm 6:3–4).",t:"Segno e sigillo dell'alleanza, rito di iniziazione. Non è il battesimo che salva ma la fede a cui si lega.",og:"Impegna a vita nuova. Il suo ricordo è fonte di identità e coraggio: «Sono figlio di Dio, appartengo a Cristo»."},
+  preghiera:{s:"Ebraico <strong>tefillah</strong>, greco <strong>proseuche</strong>. Il dialogo con il Padre: respiro dell'anima.",at:"Abraamo intercede per Sodoma (Gen 18). I Salmi: libro di preghiera di Israele con tutte le sue forme.",nt:"Gesù prega regolarmente (Lc 5:16) e insegna il Padre Nostro (Mt 6:9–13). «Pregate senza intermissione» (1 Ts 5:17). Lo Spirito aiuta nella preghiera (Rm 8:26).",t:"Non magia ma relazione: il figlio che parla al Padre. Forme: adorazione, confessione, ringraziamento, supplica, intercessione. Allinea il credente alla volontà di Dio.",og:"«In ogni cosa fate conoscere le vostre richieste a Dio» (Fil 4:6). Respiro della fede, arma dello Spirito, motore della missione."},
+  peccato:{s:"Ebraico <strong>hattat</strong> (mancare il bersaglio), greco <strong>hamartia</strong> (perdere il segno). Trasgressione, ribellione, mancanza verso Dio.",at:"Entra con la caduta (Gen 3). «Tutti hanno peccato» (Sal 51:5). I profeti denunciano il peccato etico, cultuale e sociale.",nt:"«Tutti hanno peccato e sono privi della gloria di Dio» (Rm 3:23). Potenza che domina senza Cristo (Rm 7). Con la morte di Cristo il suo potere è spezzato (Rm 6:6–7).",t:"Dimensioni: colpa, contaminazione, potere, morte. Cristo affronta tutte e quattro: perdona, purifica, spezza il potere, offre vita eterna.",og:"Il credente confessa il peccato (1 Gv 1:9), si pente, cammina nello Spirito (Gal 5:16). Non è più schiavo del peccato: «morto al peccato, vivo per Dio in Cristo» (Rm 6:11)."},
+  perdono:{s:"Ebraico <strong>salah/nasa'</strong> (portare via, togliere), greco <strong>aphiemi</strong> (mandare via, rilasciare). Rimuove la colpa, ripristina la relazione.",at:"«L'Eterno è Dio compassionevole... che perdona l'iniquità» (Es 34:6–7). «Egli perdona tutte le tue iniquità» (Sal 103:3). I sacrifici mediano il perdono.",nt:"Gesù perdona con autorità divina (Mc 2:5–7). Sulla croce: «Padre, perdona loro» (Lc 23:34). «Se confessiamo i nostri peccati, egli è fedele e giusto da perdonarci» (1 Gv 1:9).",t:"Non lassismo ma giustizia in Cristo: i peccati non sono ignorati ma posti su di lui. Chi è perdonato molto ama molto (Lc 7:47).",og:"Il credente perdona come Dio ha perdonato in Cristo (Ef 4:32; Col 3:13). Il perdono reciproco esprime la grazia ricevuta e rompe il ciclo della vendetta."},
+  regno_di_dio:{s:"Greco <strong>basileia tou Theou</strong> (regnare/governo sovrano di Dio). Non luogo geografico ma regno attivo.",at:"Dio è re dell'universo (Sal 93; 99). I profeti annunciano un regno messianico (Is 9:6–7; Dn 2:44; 7:14).",nt:"Già presente («è in mezzo a voi», Lc 17:21) e ancora futuro («venga il tuo regno», Mt 6:10). Tema centrale di Gesù (Mc 1:15). Cresce come seme e lievito (Mt 13).",t:"Tensione «già/non ancora»: inaugurato in Cristo e nello Spirito, non ancora consumato. La Chiesa ne è segno e strumento.",og:"«Cercate prima il regno di Dio» (Mt 6:33). Missione, giustizia e cura del creato come espressioni del regno già presente."},
+  riconciliazione:{s:"Greco <strong>katallasso</strong> (trasformare ostilità in pace). Ripristina la relazione rotta dal peccato.",at:"I sacrifici e le intercessioni profetiche prefigurano la riconciliazione finale. Is 53:5: il servo porta la pace.",nt:"«Dio in Cristo riconciliava il mondo con sé stesso» (2 Cor 5:19). È Dio che riconcilia l'uomo (non viceversa). Abbraccia anche la dimensione orizzontale: Ebrei e Gentili (Ef 2:14–16).",t:"Presuppone alienazione reale. Cristo è il Mediatore unico (1 Tim 2:5). Atto compiuto («siamo stati riconciliati», Rm 5:10) e realtà da sperimentare.",og:"Il credente diventa «ambasciatore di riconciliazione» (2 Cor 5:20): portatore della pace con Dio e costruttore di pace nelle relazioni umane."},
+  elezione:{s:"Ebraico <strong>bahar</strong> (scegliere), greco <strong>eklegomai</strong>. Scelta sovrana e gratuita di Dio.",at:"Dio sceglie Israele non per meriti ma per amore gratuito (Dt 7:6–7). Abraamo (Gen 12:1–3), Davide (1 Sam 16:12–13). L'elezione è per la missione.",nt:"«Eletti in Cristo prima della fondazione del mondo» (Ef 1:4). L'elezione è sempre in Cristo. Catena aurea (Rm 8:28–30): prescienza → predestinazione → chiamata → giustificazione → glorificazione.",t:"Dottrina di comfort, non di esclusione. Assicura che la salvezza dipende dalla sovranità fedele di Dio. Compatibile con la responsabilità umana.",og:"«Siete una stirpe eletta... affinché proclamiate le virtù di colui che vi ha chiamati» (1 Pt 2:9). Produce umiltà, gratitudine e impegno missionario."}
+};
+
+const DICT_LABELS = { spirito_santo:'Spirito Santo', trinita:'Trinità', regno_di_dio:'Regno di Dio', cena_del_signore:'Cena del Signore' };
+const SUGGESTIONS = ['grazia','fede','salvezza','espiazione','parousia','shalom','pentecoste','redenzione','giustificazione','santificazione','glorificazione','spirito_santo','trinita','incarnazione','alleanza','resurrezione','battesimo','preghiera','peccato','perdono','regno_di_dio','riconciliazione','elezione'];
+
+function getSugLabel(k){ return DICT_LABELS[k]||k.charAt(0).toUpperCase()+k.slice(1).replace(/_/g,' '); }
+
+// Popola suggerimenti
+(function(){
+  const c=document.getElementById('sug-main');
+  SUGGESTIONS.forEach(k=>{
+    const b=document.createElement('button');b.className='sug-btn';b.textContent=getSugLabel(k);
+    b.onclick=()=>{document.getElementById('dIn').value=getSugLabel(k);renderDict(k);showTab('diz');};
+    c.appendChild(b);
+  });
+})();
+
+function searchDict(){
+  const raw=document.getElementById('dIn').value.trim();
+  if(!raw) return;
+  const q=norm(raw).replace(/\s+/g,'_');
+  const qSpace=norm(raw);
+  const keys=Object.keys(DICT);
+  let found=keys.find(k=>norm(k)===q||norm(k).replace(/_/g,' ')===qSpace);
+  if(!found){
+    const aliasMap={'spirito santo':'spirito_santo','spirito':'spirito_santo','trinita':'trinita','trinità':'trinita','regno di dio':'regno_di_dio','regno':'regno_di_dio','cena del signore':'cena_del_signore','santa cena':'cena_del_signore'};
+    const aliasTarget=aliasMap[qSpace]||aliasMap[q];
+    if(aliasTarget&&DICT[aliasTarget]) found=aliasTarget;
+  }
+  if(!found) found=keys.find(k=>{const kn=norm(k).replace(/_/g,' ');return kn.includes(qSpace)||qSpace.includes(kn);});
+  if(!found){
+    const el=document.getElementById('dcontent');
+    el.innerHTML=`<div class="err">Termine "<strong>${raw}</strong>" non trovato.</div><div class="sug-wrap"><div class="sug-list" id="sug-err"></div></div>`;
+    const c=document.getElementById('sug-err');
+    SUGGESTIONS.forEach(k=>{const b=document.createElement('button');b.className='sug-btn';b.textContent=getSugLabel(k);b.onclick=()=>{document.getElementById('dIn').value=getSugLabel(k);renderDict(k);};c.appendChild(b);});
+    return;
+  }
+  renderDict(found);
+}
+
+function renderDict(key){
+  const d=DICT[key]; if(!d) return;
+  const label=getSugLabel(key);
+  const el=document.getElementById('dcontent');
+  el.innerHTML=`<div class="dict-card"><div class="dict-term">${label}</div><div class="dict-body">
+    <h3>Etimologia e significato</h3><p>${d.s}</p>
+    <h3>Nel Vecchio Testamento</h3><p>${d.at}</p>
+    <h3>Nel Nuovo Testamento</h3><p>${d.nt}</p>
+    <h3>Significato teologico</h3><p>${d.t}</p>
+    <h3>Rilevanza spirituale oggi</h3><p>${d.og}</p>
+  </div></div>
+  <div class="sug-wrap" style="margin-top:20px"><div class="sug-title">Altri termini</div><div class="sug-list" id="sug-other"></div></div>`;
+  const c=document.getElementById('sug-other');
+  SUGGESTIONS.filter(k=>k!==key).forEach(k=>{
+    const b=document.createElement('button');b.className='sug-btn';b.textContent=getSugLabel(k);
+    b.onclick=()=>{document.getElementById('dIn').value=getSugLabel(k);renderDict(k);};c.appendChild(b);
+  });
+  document.getElementById('p-diz').scrollTop=0;
+}
+
+// ═══════════════════════════════════════════════
+// PWA
+// ═══════════════════════════════════════════════
+const svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="18" fill="#1A1610"/><text y=".9em" font-size="70" x="16">⛺</text></svg>`;
+const iu=URL.createObjectURL(new Blob([svg],{type:'image/svg+xml'}));
+const al=document.createElement('link');al.rel='apple-touch-icon';al.href=iu;document.head.appendChild(al);
+const mf={name:'Tenda di Convegno',short_name:'Tenda',start_url:'./',display:'standalone',background_color:'#0D0B07',theme_color:'#1a1208',lang:'it',icons:[{src:iu,sizes:'512x512',type:'image/svg+xml',purpose:'any maskable'}]};
+const ml=document.createElement('link');ml.rel='manifest';ml.href=URL.createObjectURL(new Blob([JSON.stringify(mf)],{type:'application/manifest+json'}));document.head.appendChild(ml);
+if('serviceWorker' in navigator){const sw=`self.addEventListener('install',()=>self.skipWaiting());self.addEventListener('activate',()=>self.clients.claim());self.addEventListener('fetch',e=>e.respondWith(fetch(e.request).catch(()=>new Response('Offline',{status:503}))));`;navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'}))).catch(()=>{});}
+let dp=null;const bn=document.getElementById('pwa');
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();dp=e;bn.style.display='flex';});
+document.getElementById('pwa-inst').addEventListener('click',async()=>{if(!dp)return;dp.prompt();await dp.userChoice;dp=null;bn.style.display='none';});
+document.getElementById('pwa-x').addEventListener('click',()=>bn.style.display='none');
+window.addEventListener('appinstalled',()=>bn.style.display='none');
+</script>
+</body>
+</html>
