@@ -95,6 +95,9 @@ html,body{height:100%;background:var(--bg);color:var(--tx);font-family:'EB Garam
 .ornament{text-align:center;color:var(--gb);font-size:18px;margin:18px 0 16px;letter-spacing:.3em}
 .info-box{background:var(--s2);border:1px solid var(--gb);border-radius:8px;padding:14px 16px;font-size:15px;line-height:1.7;color:var(--tx2);margin-bottom:16px}
 .info-box strong{color:var(--gold)}
+.wiki-card{display:block;width:100%;text-align:left;background:var(--s2);border:1px solid var(--gb);border-radius:8px;padding:13px 16px;margin-bottom:8px;cursor:pointer;color:var(--tx);font-family:'EB Garamond',serif;transition:background .15s,border-color .15s}
+.wiki-card:hover{background:var(--s3);border-color:var(--gold)}
+.wiki-title{font-family:'Cinzel',serif;font-size:14px;font-weight:600;color:var(--gold)}
 </style>
 </head>
 <body>
@@ -118,7 +121,7 @@ html,body{height:100%;background:var(--bg);color:var(--tx);font-family:'EB Garam
 </div>
 
 <div class="sbar" id="sbar-bibbia">
-  <input id="bIn" placeholder="Es: Giovanni 3 &middot; Salmi 23 &middot; Romani 8:28-39&hellip;" autocomplete="off" autocorrect="off" spellcheck="false">
+  <input id="bIn" placeholder="Es: Giovanni 3:16 &middot; Salmi 23 &middot; Romani 8:28-39&hellip;" autocomplete="off" autocorrect="off" spellcheck="false">
   <button class="btn" id="btn-bib">CERCA</button>
 </div>
 <div class="sbar" id="sbar-diz">
@@ -137,13 +140,16 @@ html,body{height:100%;background:var(--bg);color:var(--tx);font-family:'EB Garam
     <div class="ornament">&#10022; &#10022; &#10022;</div>
     <div class="stitle">Come usare l'app</div>
     <p style="font-size:16px;color:var(--mu);line-height:1.8;margin-bottom:10px">
-      <strong style="color:var(--tx2)">Bibbia</strong> &mdash; cerca qualsiasi passo, es.
-      <em style="color:var(--gold2)">Giovanni 3</em> oppure <em style="color:var(--gold2)">Salmi 23:1-6</em>.
+      <strong style="color:var(--tx2)">Bibbia</strong> &mdash; cerca un capitolo, un singolo versetto o una serie:
+      <em style="color:var(--gold2)">Giovanni 3</em> &middot;
+      <em style="color:var(--gold2)">Giovanni 3:16</em> &middot;
+      <em style="color:var(--gold2)">Salmi 23:1-6</em>.
       Vedrai automaticamente la <strong style="color:var(--gold2)">Riveduta Luzzi</strong> e la <strong style="color:var(--gold2)">King James</strong> con i numeri Strong cliccabili per le definizioni di Greco ed Ebraico.
     </p>
     <p style="font-size:16px;color:var(--mu);line-height:1.8">
       <strong style="color:var(--tx2)">Dizionario</strong> &mdash; approfondisci termini come
       <em style="color:var(--gold2)">grazia</em>, <em style="color:var(--gold2)">espiazione</em>, <em style="color:var(--gold2)">parousia</em>&hellip;
+      Se un termine non &egrave; nelle 23 voci curate, l'app cerca automaticamente su <strong style="color:var(--gold2)">Wikipedia in italiano</strong>.
     </p>
   </div>
 
@@ -576,14 +582,9 @@ function searchDict(){
     if(aliasTarget&&DICT[aliasTarget]) found=aliasTarget;
   }
   if(!found) found=keys.find(k=>{const kn=norm(k).replace(/_/g,' ');return kn.includes(qSpace)||qSpace.includes(kn);});
-  if(!found){
-    const el=document.getElementById('dcontent');
-    el.innerHTML=`<div class="err">Termine "<strong>${escHtml(raw)}</strong>" non trovato.</div><div class="sug-wrap"><div class="sug-list" id="sug-err"></div></div>`;
-    const c=document.getElementById('sug-err');
-    SUGGESTIONS.forEach(k=>{const b=document.createElement('button');b.className='sug-btn';b.textContent=getSugLabel(k);b.onclick=()=>{document.getElementById('dIn').value=getSugLabel(k);renderDict(k);};c.appendChild(b);});
-    return;
-  }
-  renderDict(found);
+  if(found){ renderDict(found); return; }
+  // Nessuna voce locale → cerca su Wikipedia
+  searchWikipedia(raw);
 }
 
 function renderDict(key){
@@ -596,6 +597,9 @@ function renderDict(key){
     <h3>Nel Nuovo Testamento</h3><p>${d.nt}</p>
     <h3>Significato teologico</h3><p>${d.t}</p>
     <h3>Rilevanza spirituale oggi</h3><p>${d.og}</p>
+    <p style="margin-top:18px;font-size:13px;color:var(--mu)">
+      <a href="https://it.wikipedia.org/wiki/Special:Search?search=${encodeURIComponent(label+' teologia')}" target="_blank" rel="noopener" style="color:var(--blue);text-decoration:none;border-bottom:1px solid var(--blue);padding-bottom:1px">Approfondisci su Wikipedia →</a>
+    </p>
   </div></div>
   <div class="sug-wrap" style="margin-top:20px"><div class="sug-title">Altri termini</div><div class="sug-list" id="sug-other"></div></div>`;
   const c=document.getElementById('sug-other');
@@ -604,6 +608,96 @@ function renderDict(key){
     b.onclick=()=>{document.getElementById('dIn').value=getSugLabel(k);renderDict(k);};c.appendChild(b);
   });
   document.getElementById('p-diz').scrollTop=0;
+}
+
+// ═══════════════════════════════════════════════
+// WIKIPEDIA FALLBACK (italiano)
+// ═══════════════════════════════════════════════
+const wikiCache = {};
+
+async function searchWikipedia(term) {
+  const el = document.getElementById('dcontent');
+  el.innerHTML = '<div class="spinner"></div>';
+  // Aggiungo "teologia" o "Bibbia" alla query per filtrare risultati pertinenti
+  const augmented = `${term} teologia Bibbia`;
+  try {
+    const res = await fetch(`https://it.wikipedia.org/w/rest.php/v1/search/page?q=${encodeURIComponent(augmented)}&limit=6`);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    const pages = (data.pages || []).filter(p => !/\bdisambigua\b/i.test(p.description || ''));
+    if (!pages.length) {
+      el.innerHTML = `<div class="err">Nessun risultato per "<strong>${escHtml(term)}</strong>" né nel dizionario locale né su Wikipedia.</div>` + buildSuggestionsHtml();
+      attachSuggestionHandlers();
+      return;
+    }
+    let html = `<div class="stitle">Risultati Wikipedia per "${escHtml(term)}"</div>`;
+    html += `<div class="info-box" style="font-size:13px">Il termine non è nel dizionario teologico curato. Ho cercato su Wikipedia in italiano. Tocca un risultato per leggere il riassunto.</div>`;
+    html += `<div id="wiki-results">`;
+    pages.forEach(p => {
+      const desc = p.description ? `<div style="font-size:13px;color:var(--mu);margin-top:3px">${escHtml(p.description)}</div>` : '';
+      html += `<button class="wiki-card" data-key="${escHtml(p.key)}" data-title="${escHtml(p.title)}"><div class="wiki-title">${escHtml(p.title)}</div>${desc}</button>`;
+    });
+    html += `</div>`;
+    html += buildSuggestionsHtml();
+    el.innerHTML = html;
+    document.querySelectorAll('.wiki-card').forEach(b => {
+      b.addEventListener('click', () => loadWikiSummary(b.dataset.key, b.dataset.title));
+    });
+    attachSuggestionHandlers();
+    document.getElementById('p-diz').scrollTop = 0;
+  } catch(e) {
+    el.innerHTML = `<div class="err">Errore di connessione a Wikipedia (${escHtml(e.message)}).</div>` + buildSuggestionsHtml();
+    attachSuggestionHandlers();
+  }
+}
+
+async function loadWikiSummary(key, title) {
+  const el = document.getElementById('dcontent');
+  el.innerHTML = '<div class="spinner"></div>';
+  try {
+    const data = wikiCache[key] || await fetch(`https://it.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(key)}`).then(r => r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status)));
+    wikiCache[key] = data;
+    const extract = data.extract_html || (data.extract ? `<p>${escHtml(data.extract)}</p>` : '<p>Riassunto non disponibile.</p>');
+    const desc = data.description ? `<div style="font-size:14px;color:var(--gold2);font-style:italic;margin-bottom:10px">${escHtml(data.description)}</div>` : '';
+    const thumb = data.thumbnail && data.thumbnail.source ? `<img src="${data.thumbnail.source}" alt="" style="float:right;max-width:140px;margin:0 0 10px 14px;border-radius:6px;border:1px solid var(--gb)">` : '';
+    const url = (data.content_urls && data.content_urls.desktop && data.content_urls.desktop.page) || `https://it.wikipedia.org/wiki/${encodeURIComponent(key)}`;
+    el.innerHTML = `
+      <div class="dict-card">
+        <div class="dict-term">${escHtml(data.title || title)}</div>
+        ${desc}
+        <div class="dict-body" style="overflow:auto">${thumb}${extract}
+          <p style="margin-top:18px;font-size:13px;color:var(--mu);clear:both">
+            Fonte: <a href="${url}" target="_blank" rel="noopener" style="color:var(--blue);text-decoration:none;border-bottom:1px solid var(--blue);padding-bottom:1px">Wikipedia in italiano →</a>
+          </p>
+        </div>
+      </div>
+      <div class="sug-wrap" style="margin-top:20px">
+        <div class="sug-title">Dizionario curato</div>
+        <div class="sug-list" id="sug-after"></div>
+      </div>`;
+    const c = document.getElementById('sug-after');
+    SUGGESTIONS.forEach(k => {
+      const b = document.createElement('button'); b.className = 'sug-btn'; b.textContent = getSugLabel(k);
+      b.onclick = () => { document.getElementById('dIn').value = getSugLabel(k); renderDict(k); };
+      c.appendChild(b);
+    });
+    document.getElementById('p-diz').scrollTop = 0;
+  } catch(e) {
+    el.innerHTML = `<div class="err">Errore caricando "${escHtml(title)}" (${escHtml(e.message)}).</div>` + buildSuggestionsHtml();
+    attachSuggestionHandlers();
+  }
+}
+
+function buildSuggestionsHtml() {
+  return `<div class="sug-wrap" style="margin-top:20px"><div class="sug-title">Dizionario curato</div><div class="sug-list" id="sug-extra">` +
+    SUGGESTIONS.map(k => `<button class="sug-btn" data-sugkey="${k}">${getSugLabel(k)}</button>`).join('') +
+    `</div></div>`;
+}
+
+function attachSuggestionHandlers() {
+  document.querySelectorAll('#sug-extra .sug-btn[data-sugkey]').forEach(b => {
+    b.onclick = () => { document.getElementById('dIn').value = getSugLabel(b.dataset.sugkey); renderDict(b.dataset.sugkey); };
+  });
 }
 </script>
 </body>
