@@ -129,6 +129,43 @@ html,body{height:100%;background:var(--bg);color:var(--tx);font-family:'EB Garam
   <button class="btn" id="btn-diz">CERCA</button>
 </div>
 
+<div cla.ch-nav{display:flex;gap:8px;justify-content:space-between;align-items:stretch;margin:18px 0}
+.ch-nav-btn{flex:1;background:linear-gradient(180deg,var(--s2),var(--s3));border:1px solid var(--gb);border-radius:8px;padding:12px 14px;font-family:'Cinzel',serif;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--gold);cursor:pointer;transition:background .15s,border-color .15s;text-align:center;line-height:1.4}
+.ch-nav-btn:hover{background:var(--s3);border-color:var(--gold2)}
+.ch-nav-btn:disabled{opacity:.3;cursor:not-allowed}
+.ch-nav-btn .nav-lbl{display:block;font-size:9px;color:var(--tx2);margin-bottom:3px;font-weight:400}
+.ch-nav-btn .nav-ref{display:block;font-weight:600}
+</style>
+</head>
+<body>
+<div class="app">
+
+<div class="hdr">
+  <div class="brand">
+    <span style="font-size:22px;flex-shrink:0">&#x26FA;</span>
+    <div><h1>Tenda di Convegno</h1><p>Meditazione Pentecostale</p></div>
+  </div>
+  <a id="dl-btn" href="tenda-di-convegno.html" download="tenda-di-convegno.html" title="Scarica l'app come file HTML"
+     style="flex-shrink:0;color:var(--gold);border:1px solid var(--gb);border-radius:6px;padding:6px 10px;font-family:'Cinzel',serif;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;background:var(--s2);transition:background .2s,color .2s">
+    &#x2B07; Scarica
+  </a>
+</div>
+
+<div class="tabs">
+  <button class="tab on" id="tab-home"   data-tab="home">Oggi</button>
+  <button class="tab"    id="tab-bibbia" data-tab="bibbia">Bibbia</button>
+  <button class="tab"    id="tab-diz"    data-tab="diz">Dizionario</button>
+</div>
+
+<div class="sbar" id="sbar-bibbia">
+  <input id="bIn" placeholder="Es: Giovanni 3:16 &middot; Salmi 23 &middot; Romani 8:28-39&hellip;" autocomplete="off" autocorrect="off" spellcheck="false">
+  <button class="btn" id="btn-bib">CERCA</button>
+</div>
+<div class="sbar" id="sbar-diz">
+  <input id="dIn" placeholder="Es: grazia, fede, espiazione, parousia&hellip;" autocomplete="off" spellcheck="false">
+  <button class="btn" id="btn-diz">CERCA</button>
+</div>
+
 <div class="panels">
 
   <div class="panel on" id="p-home">
@@ -154,12 +191,7 @@ html,body{height:100%;background:var(--bg);color:var(--tx);font-family:'EB Garam
   </div>
 
   <div class="panel" id="p-bibbia">
-    <div id="bcontent">
-      <div class="empty">
-        <div class="empty-ico">&#128214;</div>
-        <div style="font-size:14px;line-height:1.6">Usa la barra qui sopra<br>per cercare un passo biblico.</div>
-      </div>
-    </div>
+    <div id="bcontent"></div>
   </div>
 
   <div class="panel" id="p-diz">
@@ -276,31 +308,31 @@ const VOTD=[
 // BIBLE BOOK MAP
 // ═══════════════════════════════════════════════
 const BOOKS=[
-  [1,['genesi','gen'],'Genesi'],[2,['esodo','es'],'Esodo'],[3,['levitico','lev'],'Levitico'],
-  [4,['numeri','num'],'Numeri'],[5,['deuteronomio','deut','dt'],'Deuteronomio'],
-  [6,['giosue','gios'],'Giosuè'],[7,['giudici','giud'],'Giudici'],[8,['rut'],'Rut'],
-  [9,['1 samuele','1sam','1 sam'],'1 Samuele'],[10,['2 samuele','2sam','2 sam'],'2 Samuele'],
-  [11,['1 re','i re'],'1 Re'],[12,['2 re','ii re'],'2 Re'],
-  [13,['1 cronache','1cron','1 cron'],'1 Cronache'],[14,['2 cronache','2cron','2 cron'],'2 Cronache'],
-  [15,['esdra'],'Esdra'],[16,['neemia'],'Neemia'],[17,['ester'],'Ester'],[18,['giobbe'],'Giobbe'],
-  [19,['salmi','salmo','sal'],'Salmi'],[20,['proverbi','prov'],'Proverbi'],
-  [21,['ecclesiaste','eccl'],'Ecclesiaste'],[22,['cantico dei cantici','cantico','cant'],'Cantico'],
-  [23,['isaia','is'],'Isaia'],[24,['geremia','ger'],'Geremia'],[25,['lamentazioni','lam'],'Lamentazioni'],
-  [26,['ezechiele','ez'],'Ezechiele'],[27,['daniele','dan'],'Daniele'],[28,['osea'],'Osea'],
-  [29,['gioele'],'Gioele'],[30,['amos'],'Amos'],[31,['abdia','abd'],'Abdia'],[32,['giona'],'Giona'],
-  [33,['michea','mic'],'Michea'],[34,['naum'],'Naum'],[35,['abacuc','abac'],'Abacuc'],
-  [36,['sofonia','sof'],'Sofonia'],[37,['aggeo','agg'],'Aggeo'],[38,['zaccaria','zacc'],'Zaccaria'],
-  [39,['malachia','mal'],'Malachia'],[40,['matteo','mt','mat'],'Matteo'],[41,['marco','mc','mar'],'Marco'],
-  [42,['luca','lc'],'Luca'],[43,['giovanni','gv'],'Giovanni'],[44,['atti','at'],'Atti'],
-  [45,['romani','rom','rm'],'Romani'],[46,['1 corinzi','1cor','1 cor'],'1 Corinzi'],[47,['2 corinzi','2cor','2 cor'],'2 Corinzi'],
-  [48,['galati','gal'],'Galati'],[49,['efesini','ef'],'Efesini'],[50,['filippesi','fil'],'Filippesi'],
-  [51,['colossesi','col'],'Colossesi'],[52,['1 tessalonicesi','1ts','1 ts'],'1 Tessalonicesi'],
-  [53,['2 tessalonicesi','2ts','2 ts'],'2 Tessalonicesi'],[54,['1 timoteo','1tim','1 tim'],'1 Timoteo'],
-  [55,['2 timoteo','2tim','2 tim'],'2 Timoteo'],[56,['tito'],'Tito'],[57,['filemone'],'Filemone'],
-  [58,['ebrei','eb'],'Ebrei'],[59,['giacomo','giac','gc'],'Giacomo'],
-  [60,['1 pietro','1pt','1 pt'],'1 Pietro'],[61,['2 pietro','2pt','2 pt'],'2 Pietro'],
-  [62,['1 giovanni','1gv','1 gv'],'1 Giovanni'],[63,['2 giovanni','2gv','2 gv'],'2 Giovanni'],
-  [64,['3 giovanni','3gv','3 gv'],'3 Giovanni'],[65,['giuda'],'Giuda'],[66,['apocalisse','apoc','ap'],'Apocalisse'],
+  [1,['genesi','gen'],'Genesi',50],[2,['esodo','es'],'Esodo',40],[3,['levitico','lev'],'Levitico',27],
+  [4,['numeri','num'],'Numeri',36],[5,['deuteronomio','deut','dt'],'Deuteronomio',34],
+  [6,['giosue','gios'],'Giosuè',24],[7,['giudici','giud'],'Giudici',21],[8,['rut'],'Rut',4],
+  [9,['1 samuele','1sam','1 sam'],'1 Samuele',31],[10,['2 samuele','2sam','2 sam'],'2 Samuele',24],
+  [11,['1 re','i re'],'1 Re',22],[12,['2 re','ii re'],'2 Re',25],
+  [13,['1 cronache','1cron','1 cron'],'1 Cronache',29],[14,['2 cronache','2cron','2 cron'],'2 Cronache',36],
+  [15,['esdra'],'Esdra',10],[16,['neemia'],'Neemia',13],[17,['ester'],'Ester',10],[18,['giobbe'],'Giobbe',42],
+  [19,['salmi','salmo','sal'],'Salmi',150],[20,['proverbi','prov'],'Proverbi',31],
+  [21,['ecclesiaste','eccl'],'Ecclesiaste',12],[22,['cantico dei cantici','cantico','cant'],'Cantico',8],
+  [23,['isaia','is'],'Isaia',66],[24,['geremia','ger'],'Geremia',52],[25,['lamentazioni','lam'],'Lamentazioni',5],
+  [26,['ezechiele','ez'],'Ezechiele',48],[27,['daniele','dan'],'Daniele',12],[28,['osea'],'Osea',14],
+  [29,['gioele'],'Gioele',3],[30,['amos'],'Amos',9],[31,['abdia','abd'],'Abdia',1],[32,['giona'],'Giona',4],
+  [33,['michea','mic'],'Michea',7],[34,['naum'],'Naum',3],[35,['abacuc','abac'],'Abacuc',3],
+  [36,['sofonia','sof'],'Sofonia',3],[37,['aggeo','agg'],'Aggeo',2],[38,['zaccaria','zacc'],'Zaccaria',14],
+  [39,['malachia','mal'],'Malachia',4],[40,['matteo','mt','mat'],'Matteo',28],[41,['marco','mc','mar'],'Marco',16],
+  [42,['luca','lc'],'Luca',24],[43,['giovanni','gv'],'Giovanni',21],[44,['atti','at'],'Atti',28],
+  [45,['romani','rom','rm'],'Romani',16],[46,['1 corinzi','1cor','1 cor'],'1 Corinzi',16],[47,['2 corinzi','2cor','2 cor'],'2 Corinzi',13],
+  [48,['galati','gal'],'Galati',6],[49,['efesini','ef'],'Efesini',6],[50,['filippesi','fil'],'Filippesi',4],
+  [51,['colossesi','col'],'Colossesi',4],[52,['1 tessalonicesi','1ts','1 ts'],'1 Tessalonicesi',5],
+  [53,['2 tessalonicesi','2ts','2 ts'],'2 Tessalonicesi',3],[54,['1 timoteo','1tim','1 tim'],'1 Timoteo',6],
+  [55,['2 timoteo','2tim','2 tim'],'2 Timoteo',4],[56,['tito'],'Tito',3],[57,['filemone'],'Filemone',1],
+  [58,['ebrei','eb'],'Ebrei',13],[59,['giacomo','giac','gc'],'Giacomo',5],
+  [60,['1 pietro','1pt','1 pt'],'1 Pietro',5],[61,['2 pietro','2pt','2 pt'],'2 Pietro',3],
+  [62,['1 giovanni','1gv','1 gv'],'1 Giovanni',5],[63,['2 giovanni','2gv','2 gv'],'2 Giovanni',1],
+  [64,['3 giovanni','3gv','3 gv'],'3 Giovanni',1],[65,['giuda'],'Giuda',1],[66,['apocalisse','apoc','ap'],'Apocalisse',22],
 ];
 
 function norm(s){ return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim(); }
@@ -323,6 +355,47 @@ function parseRef(raw){
 }
 
 function escHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ═══════════════════════════════════════════════
+// BIBLE INDEX (66 books → chapter selector)
+// ═══════════════════════════════════════════════
+function showBookList() {
+  const ot = BOOKS.filter(b => b[0] <= 39);
+  const nt = BOOKS.filter(b => b[0] >= 40);
+  const renderGroup = (list) =>
+    `<div class="bk-grid">` +
+    list.map(b => `<button class="bk-btn" data-bnum="${b[0]}" data-blabel="${escHtml(b[2])}" data-bchap="${b[3]}">${escHtml(b[2])}</button>`).join('') +
+    `</div>`;
+  const html =
+    `<div class="info-box" style="font-size:14px">Tocca un libro per vedere i suoi capitoli, oppure usa la barra qui sopra per cercare un passo specifico (es. <em>Giovanni 3:16</em>).</div>` +
+    `<div class="tt-head">Antico Testamento &middot; 39 libri</div>` + renderGroup(ot) +
+    `<div class="tt-head">Nuovo Testamento &middot; 27 libri</div>` + renderGroup(nt);
+  const el = document.getElementById('bcontent');
+  el.innerHTML = html;
+  el.querySelectorAll('.bk-btn').forEach(b => {
+    b.addEventListener('click', () => showChapterList(parseInt(b.dataset.bnum), b.dataset.blabel, parseInt(b.dataset.bchap)));
+  });
+  document.getElementById('p-bibbia').scrollTop = 0;
+}
+
+function showChapterList(num, label, count) {
+  let html =
+    `<button class="back-btn" id="back-to-books">&larr; Tutti i libri</button>` +
+    `<div class="ch-head">${escHtml(label)} &middot; ${count} ${count === 1 ? 'capitolo' : 'capitoli'}</div>` +
+    `<div class="ch-grid">`;
+  for (let i = 1; i <= count; i++) html += `<button class="ch-btn" data-ch="${i}">${i}</button>`;
+  html += `</div>`;
+  const el = document.getElementById('bcontent');
+  el.innerHTML = html;
+  document.getElementById('back-to-books').addEventListener('click', showBookList);
+  el.querySelectorAll('.ch-btn').forEach(b => {
+    b.addEventListener('click', () => {
+      document.getElementById('bIn').value = `${label} ${b.dataset.ch}`;
+      searchBible();
+    });
+  });
+  document.getElementById('p-bibbia').scrollTop = 0;
+}
 
 // ═══════════════════════════════════════════════
 // PARSE KJV (bolls.life format) — words with <S>NUM</S> tags
@@ -495,7 +568,10 @@ async function searchBible() {
     if (!rivVs.length) { el.innerHTML='<div class="err">Nessun versetto trovato.</div>'; return; }
 
     const rangeStr = p.vf ? `${p.ch}:${p.vf}${p.vt&&p.vt!==p.vf?'–'+p.vt:''}` : String(p.ch);
-    let html = `<div class="ch-head">${escHtml(p.label)} ${rangeStr} — Riveduta Luzzi 1927</div>`;
+    const fullChapter = !p.vf;
+    let html = `<button class="back-btn" id="back-to-books-r">&larr; Tutti i libri</button>`;
+    if (fullChapter) html += buildChapNav(p.num, p.ch);
+    html += `<div class="ch-head">${escHtml(p.label)} ${rangeStr} — Riveduta Luzzi 1927</div>`;
     rivVs.forEach(v => {
       html += `<div class="verse"><span class="vnum">${v.verse}</span><span class="vtxt">${v.text}</span></div>`;
     });
@@ -518,23 +594,42 @@ async function searchBible() {
       html += `<div class="info-box" style="margin-top:20px">King James non disponibile in questo momento.</div>`;
     }
 
+    if (fullChapter) html += buildChapNav(p.num, p.ch);
     el.innerHTML = html;
+    const back = document.getElementById('back-to-books-r');
+    if (back) back.addEventListener('click', () => { document.getElementById('bIn').value = ''; showBookList(); });
+    if (fullChapter) attachChapNav(el);
     document.getElementById('p-bibbia').scrollTop = 0;
 
   } catch(e) {
-    el.innerHTML = `<div class="err">Errore nel caricamento (${escHtml(e.message)}).<br>Verifica la connessione.</div>`;
+    el.innerHTML = `<button class="back-btn" id="back-to-books-e">&larr; Tutti i libri</button><div class="err">Errore nel caricamento (${escHtml(e.message)}).<br>Verifica la connessione.</div>`;
+    document.getElementById('back-to-books-e').addEventListener('click', () => { document.getElementById('bIn').value = ''; showBookList(); });
   }
 }
 
-// ═══════════════════════════════════════════════
-// DIZIONARIO LOCALE
-// ═══════════════════════════════════════════════
-const DICT = {
-  grazia:{s:"Ebraico <strong>ḥen</strong> (favore gratuito), greco <strong>charis</strong> (dono immeritato). La grazia è il cuore del Vangelo.",at:"Noè «trovò grazia agli occhi dell'Eterno» (Gen 6:8). Dio rivela il suo carattere: «misericordioso, clemente, lento all'ira e ricco in bontà» (Es 34:6). La grazia precede ogni merito umano.",nt:"Paolo pone la grazia al cuore del Vangelo: <em>«Per grazia siete stati salvati mediante la fede; e ciò non viene da voi; è il dono di Dio»</em> (Ef 2:8). La grazia abbonda laddove abbondò il peccato (Rm 5:20).",t:"La grazia è l'atto sovrano con cui Dio si volge verso il peccatore con amore immeritato, lo perdona, lo giustifica e lo trasforma. È la fonte della salvezza e il fondamento di tutta la vita cristiana.",og:"Il credente vive «sotto la grazia» (Rm 6:14): risponde all'amore di Dio con gratitudine e obbedienza. La grazia non elimina l'impegno etico, ma lo rende possibile e gioioso."},
-  fede:{s:"Ebraico <strong>emunah</strong> (fermezza, fedeltà), greco <strong>pistis</strong> (fiducia, credenza, lealtà). Non semplice assenso intellettuale ma fiducia totale.",at:"Abraamo credette a Dio e gli fu imputato a giustizia (Gen 15:6). La fede si manifesta nell'obbedienza fiduciosa. Abacuc: «Il giusto vivrà per la sua fede» (Ab 2:4).",nt:"Eb 11:1: «la fede è certezza delle cose sperate, dimostrazione di quelle non viste». Ef 2:8: mezzo della salvezza. Giacomo: la fede vera produce opere (Gc 2:17).",t:"La vera fede ha tre dimensioni: <em>notitia</em> (conoscenza), <em>assensus</em> (assenso) e <em>fiducia</em> (abbandono personale a Cristo). Non è forza di volontà umana ma risposta allo Spirito Santo.",og:"La fede si nutre della Parola (Rm 10:17). «Senza fede è impossibile piacergli» (Eb 11:6). Il credente cammina «per fede, non per visione» (2 Cor 5:7)."},
-  salvezza:{s:"Ebraico <strong>yeshu'ah</strong>, greco <strong>soteria</strong> (liberazione totale — corporea, spirituale, eterna).",at:"Dio libera Israele dall'Egitto (Es 14–15). I profeti anticipano una salvezza universale (Is 45:22; 49:6). «La salvezza appartiene all'Eterno» (Sal 3:8).",nt:"Salvezza passata (giustificazione, Rm 5:1), presente (santificazione, Fil 2:12) e futura (glorificazione, Rm 8:23). Abbraccia perdono, riconciliazione, rigenerazione, vita eterna.",t:"Opera esclusiva di Dio: il Padre la pianifica, il Figlio la compie, lo Spirito la applica. L'uomo non può contribuirvi con opere proprie (Ef 2:9).",og:"Il credente è «salvato», «si sta salvando» e «sarà salvato». Genera gratitudine, adorazione e impegno missionario (Rm 10:14–15)."},
-  espiazione:{s:"Ebraico <strong>kippùr</strong> (coprire, cancellare), greco <strong>hilasmos</strong> (propiziazione). Rimozione della colpa e della conseguente ira divina.",at:"Sistema sacrificale: il sangue copre il peccato. Yom Kippur (Lv 16): il sommo sacerdote entra nel Santo dei Santi con il sangue per tutto Israele.",nt:"Gesù compie quanto i sacrifici prefiguravano. <em>«Egli è propiziazione per i nostri peccati»</em> (1 Gv 2:2). «Senza spargimento di sangue non vi è remissione» (Eb 9:22).",t:"Risolve il problema della santità di Dio di fronte al peccato umano. La croce è dove giustizia e misericordia si incontrano (Sal 85:10). Cristo è insieme sommo sacerdote e vittima.",og:"Per il credente: pace con Dio (Rm 5:1), coscienza purificata (Eb 10:22), libertà dalla condanna (Rm 8:1). Vita cristiana come risposta grata al prezzo pagato."},
-  parousia:{s:"Greco <strong>parousia</strong> (presenza, venuta, arrivo ufficiale di un re). Il ritorno glorioso di Cristo alla fine dei tempi.",at:"Dn 7:13–14: «Figlio dell'uomo» che viene sulle nuvole. «Giorno dell'Eterno» dei profeti (Gl 2:31; Ml 4:1–5).",nt:"Mt 24:30: «vedrete il Figlio dell'uomo venire sulle nuvole con potenza e grande gloria». 1 Ts 4:13–17: i morti in Cristo risorgeranno; i viventi saranno trasformati (1 Cor 15:51–52).",t:"Speranza beata della Chiesa (Tt 2:13). Segna il compimento del regno di Dio, il giudizio universale, la resurrezione, la nuova creazione.",og:"Purifica il credente (1 Gv 3:2–3), motiva la missione (Mt 24:14), consola nelle sofferenze. «Vieni, Signore Gesù!» (Ap 22:20)."},
+// Costruisce HTML per i pulsanti Capitolo Precedente / Successivo
+function buildChapNav(num, ch) {
+  const idx = BOOKS.findIndex(b => b[0] === num);
+  if (idx < 0) return '';
+  const cur = BOOKS[idx];
+  let prev = null, next = null;
+  if (ch > 1) prev = { num, ch: ch - 1, label: cur[2] };
+  else if (idx > 0) { const pb = BOOKS[idx-1]; prev = { num: pb[0], ch: pb[3], label: pb[2] }; }
+  if (ch < cur[3]) next = { num, ch: ch + 1, label: cur[2] };
+  else if (idx < BOOKS.length - 1) { const nb = BOOKS[idx+1]; next = { num: nb[0], ch: 1, label: nb[2] }; }
+  const btn = (d, side) => d
+    ? `<button class="ch-nav-btn" data-nav-n="${d.num}" data-nav-c="${d.ch}" data-nav-l="${escHtml(d.label)}"><span class="nav-lbl">${side==='prev'?'&larr; Precedente':'Successivo &rarr;'}</span><span class="nav-ref">${escHtml(d.label)} ${d.ch}</span></button>`
+    : `<button class="ch-nav-btn" disabled><span class="nav-lbl">${side==='prev'?'&larr; Precedente':'Successivo &rarr;'}</span><span class="nav-ref">&mdash;</span></button>`;
+  return `<div class="ch-nav">${btn(prev,'prev')}${btn(next,'next')}</div>`;
+}
+
+function attachChapNav(rootEl) {
+  rootEl.querySelectorAll('.ch-nav-btn[data-nav-n]').forEach(b => {
+    b.addEventListener('click', () => {
+      document.getElementById('bIn').value = `${b.dataset.navL} ${b.dataset.navC}`;
+      searchBible();
+    });
+  });l 4:1–5).",nt:"Mt 24:30: «vedrete il Figlio dell'uomo venire sulle nuvole con potenza e grande gloria». 1 Ts 4:13–17: i morti in Cristo risorgeranno; i viventi saranno trasformati (1 Cor 15:51–52).",t:"Speranza beata della Chiesa (Tt 2:13). Segna il compimento del regno di Dio, il giudizio universale, la resurrezione, la nuova creazione.",og:"Purifica il credente (1 Gv 3:2–3), motiva la missione (Mt 24:14), consola nelle sofferenze. «Vieni, Signore Gesù!» (Ap 22:20)."},
   shalom:{s:"Ebraico <strong>shalom</strong> (integrità, completezza, benessere totale). Non semplice assenza di guerra ma pienezza di vita.",at:"Il dono di Dio ad Israele: «L'Eterno conceda la pace» (Nm 6:26). Il re messianico è «Principe della pace» (Is 9:5).",nt:"Gesù dona la pace che il mondo non può dare (Gv 14:27). Riconciliazione mediante il sangue della croce (Col 1:20). Paolo saluta sempre con «grazia e pace».",t:"Descrive lo stato di chi è in giusta relazione con Dio, il prossimo e il creato. Fine ultimo della redenzione. «La pace di Dio... guarderà i vostri cuori» (Fil 4:7).",og:"Il credente è chiamato a costruire shalom nel matrimonio, nella famiglia, nella chiesa, nella società (Mt 5:9)."},
   pentecoste:{s:"Greco <strong>Pentekostē</strong> (cinquantesimo giorno). Festa ebraica Shavuot: cinquanta giorni dopo la Pasqua.",at:"Festa del raccolto (Lv 23:15–21). Tradizione rabbinica: dono della Torah al Sinai. Gioele profetizza l'effusione dello Spirito (Gl 2:28–32).",nt:"At 2: lo Spirito scende come lingue di fuoco. Pietro cita Gioele. Tremila si convertono: nasce la Chiesa. Compimento della nuova alleanza.",t:"Passaggio dall'era della Legge all'era dello Spirito. La Legge scritta nel cuore (Ger 31:31–33). Lo Spirito: presenza permanente di Dio nella Chiesa (1 Cor 3:16).",og:"Ogni credente è tempio dello Spirito. I doni edificano la Chiesa; il frutto (Gal 5:22–23) trasforma il carattere."},
   redenzione:{s:"Ebraico <strong>ga'al/padah</strong> (riscattare pagando un prezzo), greco <strong>apolutrosis</strong> (liberazione mediante riscatto).",at:"Il go'el (parente redentore) riscatta dalla schiavitù (Lv 25:25; Rt 4). Dio redime Israele dall'Egitto (Es 6:6) e da Babilonia (Is 43:1).",nt:"«Il Figlio dell'uomo è venuto per dare la sua vita in riscatto per molti» (Mt 20:28). «La redenzione mediante il suo sangue, il perdono dei peccati» (Ef 1:7).",t:"Presuppone schiavitù, richiede riscatto, ottiene liberazione. Il prezzo: sangue di Cristo (1 Pt 1:18–19). Il risultato: appartenenza a Dio.",og:"Il redento non vive più per sé ma per Cristo (2 Cor 5:15). La redenzione passata garantisce quella futura: liberazione del corpo alla risurrezione (Rm 8:23)."},
