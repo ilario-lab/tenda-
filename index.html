@@ -9,7 +9,6 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Tenda">
-<link rel="manifest" href="data:application/manifest+json,{%22name%22:%22Tenda%20di%20Convegno%22,%22short_name%22:%22Tenda%22,%22description%22:%22Meditazione%20Pentecostale%20-%20Bibbia%20e%20Dizionario%20Biblico%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%230D0B07%22,%22theme_color%22:%22%231a1208%22,%22orientation%22:%22portrait-primary%22,%22icons%22:[{%22src%22:%22data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20512%20512'%3E%3Crect%20width='512'%20height='512'%20fill='%231A1610'/%3E%3Ctext%20x='50%25'%20y='54%25'%20font-size='320'%20text-anchor='middle'%20dominant-baseline='middle'%20fill='%23C8A44A'%3E%26%2326FA%3B%3C/text%3E%3C/svg%3E%22,%22sizes%22:%22512x512%22,%22type%22:%22image/svg+xml%22,%22purpose%22:%22any%20maskable%22}]}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
@@ -107,17 +106,6 @@ html,body{height:100%;background:var(--bg);color:var(--tx);font-family:'EB Garam
 .ch-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(48px,1fr));gap:6px;margin-bottom:12px}
 .ch-btn{background:var(--s2);border:1px solid var(--gb);border-radius:6px;padding:9px 4px;font-family:'Cinzel',serif;font-size:13px;font-weight:600;color:var(--gold);cursor:pointer;transition:background .15s,color .15s}
 .ch-btn:hover{background:var(--gold);color:#0D0B07}
-/* PWA Install Banner */
-.install-banner{position:fixed;bottom:0;left:0;right:0;z-index:200;background:linear-gradient(135deg,var(--s2),var(--s3));border-top:1px solid var(--gold);padding:14px 16px 20px;display:flex;align-items:center;gap:12px;transform:translateY(100%);transition:transform .4s cubic-bezier(.4,0,.2,1);box-shadow:0 -4px 24px rgba(0,0,0,.5)}
-.install-banner.show{transform:translateY(0)}
-.install-banner-ico{font-size:28px;flex-shrink:0}
-.install-banner-txt{flex:1;min-width:0}
-.install-banner-title{font-family:'Cinzel',serif;font-size:13px;font-weight:600;color:var(--gold);margin-bottom:2px}
-.install-banner-sub{font-size:12px;color:var(--tx2);line-height:1.4}
-.install-banner-actions{display:flex;flex-direction:column;gap:6px;flex-shrink:0}
-.install-btn{background:var(--gold);color:#0D0B07;border:none;border-radius:6px;padding:8px 14px;font-family:'Cinzel',serif;font-size:11px;font-weight:600;letter-spacing:.07em;cursor:pointer;white-space:nowrap}
-.install-btn:hover{background:var(--gold2)}
-.install-dismiss{background:none;border:none;font-size:11px;color:var(--mu);cursor:pointer;text-decoration:underline;font-family:inherit;text-align:center;padding:2px}
 .back-btn{background:none;border:1px solid var(--gb);border-radius:6px;padding:6px 12px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--tx2);cursor:pointer;margin-bottom:14px;transition:background .15s,color .15s}
 .back-btn:hover{background:var(--s3);color:var(--gold)}
 .ch-nav{display:flex;gap:8px;justify-content:space-between;align-items:stretch;margin:18px 0}
@@ -856,92 +844,83 @@ function attachSuggestionHandlers() {
     b.onclick = () => { document.getElementById('dIn').value = getSugLabel(b.dataset.sugkey); renderDict(b.dataset.sugkey); };
   });
 }
+
+// ══════════════════════════════════════════════
+// PWA — Manifest + Service Worker + Banner
+// ══════════════════════════════════════════════
+(function initPWA() {
+  // Icona SVG inline
+  const iconSVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="18" fill="#1A1610"/><text y=".9em" font-size="70" x="16">⛺</text></svg>`;
+  const iconUrl = URL.createObjectURL(new Blob([iconSVG], { type: 'image/svg+xml' }));
+
+  // Apple touch icon
+  const ali = document.createElement('link');
+  ali.rel = 'apple-touch-icon';
+  ali.href = iconUrl;
+  document.head.appendChild(ali);
+
+  // Manifest
+  const manifest = {
+    name: 'Tenda di Convegno',
+    short_name: 'Tenda',
+    description: 'Bibbia Riveduta Luzzi, versetto del giorno e dizionario biblico',
+    start_url: './',
+    display: 'standalone',
+    orientation: 'any',
+    background_color: '#0D0B07',
+    theme_color: '#1a1208',
+    lang: 'it',
+    icons: [
+      { src: iconUrl, sizes: '192x192', type: 'image/svg+xml', purpose: 'any maskable' },
+      { src: iconUrl, sizes: '512x512', type: 'image/svg+xml', purpose: 'any maskable' }
+    ]
+  };
+  const manifestLink = document.createElement('link');
+  manifestLink.rel = 'manifest';
+  manifestLink.href = URL.createObjectURL(new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' }));
+  document.head.appendChild(manifestLink);
+
+  // Service Worker
+  if ('serviceWorker' in navigator) {
+    const swCode = `
+      self.addEventListener('install', () => self.skipWaiting());
+      self.addEventListener('activate', () => self.clients.claim());
+      self.addEventListener('fetch', e => e.respondWith(fetch(e.request).catch(() => new Response('Offline', { status: 503 }))));
+    `;
+    navigator.serviceWorker.register(
+      URL.createObjectURL(new Blob([swCode], { type: 'application/javascript' }))
+    ).catch(() => {});
+  }
+
+  // Banner installazione
+  let deferredPrompt = null;
+  const banner = document.getElementById('pwa-banner');
+  if (banner) {
+    window.addEventListener('beforeinstallprompt', e => {
+      e.preventDefault();
+      deferredPrompt = e;
+      banner.style.display = 'flex';
+    });
+    document.getElementById('pwa-install-btn').addEventListener('click', async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      await deferredPrompt.userChoice;
+      deferredPrompt = null;
+      banner.style.display = 'none';
+    });
+    document.getElementById('pwa-dismiss-btn').addEventListener('click', () => {
+      banner.style.display = 'none';
+    });
+    window.addEventListener('appinstalled', () => { banner.style.display = 'none'; });
+  }
+})();
 </script>
-<!-- PWA Install Banner -->
-<div class="install-banner" id="installBanner">
-  <div class="install-banner-ico">&#x26FA;</div>
-  <div class="install-banner-txt">
-    <div class="install-banner-title">Installa Tenda di Convegno</div>
-    <div class="install-banner-sub">Accedi senza internet, come un'app vera</div>
-  </div>
-  <div class="install-banner-actions">
-    <button class="install-btn" id="installBtn">INSTALLA</button>
-    <button class="install-dismiss" id="dismissBtn">Non ora</button>
-  </div>
+
+<!-- BANNER INSTALLAZIONE PWA -->
+<div id="pwa-banner" style="display:none;flex-shrink:0;background:linear-gradient(135deg,#1c1400,#201800);border-top:1px solid rgba(200,164,74,0.22);padding:9px 16px;align-items:center;gap:10px">
+  <p style="flex:1;margin:0;font-size:13px;color:#EDE5D0">📲 <strong style="color:#C8A44A">Installa Tenda</strong> per averla sempre a portata di mano</p>
+  <button id="pwa-install-btn" style="background:#C8A44A;color:#0D0B07;border:none;border-radius:6px;padding:6px 14px;font-family:'Cinzel',serif;font-weight:600;font-size:11px;letter-spacing:.06em;cursor:pointer;white-space:nowrap">Installa</button>
+  <button id="pwa-dismiss-btn" style="background:none;color:#6A5F42;border:none;font-size:18px;padding:4px 6px;cursor:pointer;line-height:1">✕</button>
 </div>
-
-<script>
-// ═══════════════════════════════════════════════
-// PWA — Service Worker
-// ═══════════════════════════════════════════════
-if ('serviceWorker' in navigator) {
-  const swCode = `
-const CACHE = 'tenda-v1';
-const ASSETS = [location.href];
-self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)));
-  self.skipWaiting();
-});
-self.addEventListener('activate', e => {
-  e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));
-  self.clients.claim();
-});
-self.addEventListener('fetch', e => {
-  if (e.request.method !== 'GET') return;
-  e.respondWith(
-    caches.match(e.request).then(r => r || fetch(e.request).catch(() => caches.match(e.request)))
-  );
-});
-`;
-  const blob = new Blob([swCode], {type:'application/javascript'});
-  const swUrl = URL.createObjectURL(blob);
-  navigator.serviceWorker.register(swUrl, {scope: '/'}).catch(() => {
-    // Blob SW non supportato in alcuni browser: proviamo URL relativo
-    navigator.serviceWorker.register('sw.js').catch(()=>{});
-  });
-}
-
-// ═══════════════════════════════════════════════
-// PWA — Install Prompt
-// ═══════════════════════════════════════════════
-let deferredPrompt = null;
-const banner = document.getElementById('installBanner');
-const installBtn = document.getElementById('installBtn');
-const dismissBtn = document.getElementById('dismissBtn');
-
-// Non mostrare se già installata o già rifiutata
-const dismissed = sessionStorage.getItem('pwa-dismissed');
-const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-
-window.addEventListener('beforeinstallprompt', e => {
-  e.preventDefault();
-  deferredPrompt = e;
-  if (!dismissed && !isStandalone) {
-    setTimeout(() => banner.classList.add('show'), 1500);
-  }
-});
-
-installBtn.addEventListener('click', async () => {
-  if (deferredPrompt) {
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    deferredPrompt = null;
-  } else {
-    // Istruzioni manuali per browser senza supporto automatico
-    alert('Per installare:\n\n• Chrome/Edge → Menu (⋮) → "Installa app"\n• Safari iOS → Condividi (⎦) → "Aggiungi a schermata Home"');
-  }
-  banner.classList.remove('show');
-});
-
-dismissBtn.addEventListener('click', () => {
-  banner.classList.remove('show');
-  sessionStorage.setItem('pwa-dismissed', '1');
-});
-
-window.addEventListener('appinstalled', () => {
-  banner.classList.remove('show');
-  deferredPrompt = null;
-});
-</script>
 </body>
 </html>
