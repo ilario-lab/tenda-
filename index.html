@@ -98,43 +98,30 @@ html,body{height:100%;background:var(--bg);color:var(--tx);font-family:'EB Garam
 .wiki-card{display:block;width:100%;text-align:left;background:var(--s2);border:1px solid var(--gb);border-radius:8px;padding:13px 16px;margin-bottom:8px;cursor:pointer;color:var(--tx);font-family:'EB Garamond',serif;transition:background .15s,border-color .15s}
 .wiki-card:hover{background:var(--s3);border-color:var(--gold)}
 .wiki-title{font-family:'Cinzel',serif;font-size:14px;font-weight:600;color:var(--gold)}
-</style>
-</head>
-<body>
-<div class="app">
-
-<div class="hdr">
-  <div class="brand">
-    <span style="font-size:22px;flex-shrink:0">&#x26FA;</span>
-    <div><h1>Tenda di Convegno</h1><p>Meditazione Pentecostale</p></div>
-  </div>
-  <a id="dl-btn" href="tenda-di-convegno.html" download="tenda-di-convegno.html" title="Scarica l'app come file HTML"
-     style="flex-shrink:0;color:var(--gold);border:1px solid var(--gb);border-radius:6px;padding:6px 10px;font-family:'Cinzel',serif;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;background:var(--s2);transition:background .2s,color .2s">
-    &#x2B07; Scarica
-  </a>
-</div>
-
-<div class="tabs">
-  <button class="tab on" id="tab-home"   data-tab="home">Oggi</button>
-  <button class="tab"    id="tab-bibbia" data-tab="bibbia">Bibbia</button>
-  <button class="tab"    id="tab-diz"    data-tab="diz">Dizionario</button>
-</div>
-
-<div class="sbar" id="sbar-bibbia">
-  <input id="bIn" placeholder="Es: Giovanni 3:16 &middot; Salmi 23 &middot; Romani 8:28-39&hellip;" autocomplete="off" autocorrect="off" spellcheck="false">
-  <button class="btn" id="btn-bib">CERCA</button>
-</div>
-<div class="sbar" id="sbar-diz">
-  <input id="dIn" placeholder="Es: grazia, fede, espiazione, parousia&hellip;" autocomplete="off" spellcheck="false">
-  <button class="btn" id="btn-diz">CERCA</button>
-</div>
-
-<div cla.ch-nav{display:flex;gap:8px;justify-content:space-between;align-items:stretch;margin:18px 0}
+.tt-head{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin:18px 0 10px;display:flex;align-items:center;gap:10px}
+.tt-head::before,.tt-head::after{content:'';flex:1;height:1px;background:var(--gb)}
+.bk-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(135px,1fr));gap:7px;margin-bottom:12px}
+.bk-btn{background:var(--s2);border:1px solid var(--gb);border-radius:6px;padding:9px 8px;font-family:'EB Garamond',serif;font-size:14px;color:var(--tx);cursor:pointer;transition:background .15s,border-color .15s,color .15s;text-align:center}
+.bk-btn:hover{background:var(--gold);color:#0D0B07;border-color:var(--gold)}
+.ch-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(48px,1fr));gap:6px;margin-bottom:12px}
+.ch-btn{background:var(--s2);border:1px solid var(--gb);border-radius:6px;padding:9px 4px;font-family:'Cinzel',serif;font-size:13px;font-weight:600;color:var(--gold);cursor:pointer;transition:background .15s,color .15s}
+.ch-btn:hover{background:var(--gold);color:#0D0B07}
+.back-btn{background:none;border:1px solid var(--gb);border-radius:6px;padding:6px 12px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--tx2);cursor:pointer;margin-bottom:14px;transition:background .15s,color .15s}
+.back-btn:hover{background:var(--s3);color:var(--gold)}
+.ch-nav{display:flex;gap:8px;justify-content:space-between;align-items:stretch;margin:18px 0}
 .ch-nav-btn{flex:1;background:linear-gradient(180deg,var(--s2),var(--s3));border:1px solid var(--gb);border-radius:8px;padding:12px 14px;font-family:'Cinzel',serif;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--gold);cursor:pointer;transition:background .15s,border-color .15s;text-align:center;line-height:1.4}
 .ch-nav-btn:hover{background:var(--s3);border-color:var(--gold2)}
 .ch-nav-btn:disabled{opacity:.3;cursor:not-allowed}
 .ch-nav-btn .nav-lbl{display:block;font-size:9px;color:var(--tx2);margin-bottom:3px;font-weight:400}
 .ch-nav-btn .nav-ref{display:block;font-weight:600}
+.hist-wrap{margin-bottom:18px;padding:14px;background:linear-gradient(180deg,var(--s1),transparent);border:1px solid var(--gd);border-radius:10px}
+.hist-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.hist-title{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold)}
+.hist-clear{background:none;border:none;font-size:11px;color:var(--mu);cursor:pointer;text-decoration:underline;font-family:inherit}
+.hist-clear:hover{color:var(--gold2)}
+.hist-list{display:flex;flex-wrap:wrap;gap:6px}
+.hist-item{background:var(--s2);border:1px solid var(--gb);border-radius:14px;padding:6px 12px;font-family:'EB Garamond',serif;font-size:14px;color:var(--tx);cursor:pointer;transition:background .15s,border-color .15s}
+.hist-item:hover{background:var(--s3);border-color:var(--gold2);color:var(--gold)}
 </style>
 </head>
 <body>
@@ -357,6 +344,56 @@ function parseRef(raw){
 function escHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
 // ═══════════════════════════════════════════════
+// CRONOLOGIA DI LETTURA (localStorage)
+// ═══════════════════════════════════════════════
+const HIST_KEY = 'tenda_history_v1';
+const HIST_MAX = 10;
+
+function loadHistory() {
+  try { return JSON.parse(localStorage.getItem(HIST_KEY) || '[]'); }
+  catch { return []; }
+}
+
+function saveToHistory(num, ch, label) {
+  try {
+    let h = loadHistory();
+    h = h.filter(x => !(x.num === num && x.ch === ch));
+    h.unshift({ num, ch, label, t: Date.now() });
+    if (h.length > HIST_MAX) h = h.slice(0, HIST_MAX);
+    localStorage.setItem(HIST_KEY, JSON.stringify(h));
+  } catch {}
+}
+
+function clearHistory() {
+  try { localStorage.removeItem(HIST_KEY); } catch {}
+  showBookList();
+}
+
+function renderHistoryHtml() {
+  const h = loadHistory();
+  if (!h.length) return '';
+  const items = h.map(x => `<button class="hist-item" data-h-n="${x.num}" data-h-c="${x.ch}" data-h-l="${escHtml(x.label)}">${escHtml(x.label)} ${x.ch}</button>`).join('');
+  return `<div class="hist-wrap">
+    <div class="hist-head">
+      <span class="hist-title">&#10070; Riprendi la lettura</span>
+      <button class="hist-clear" id="hist-clear-btn">Cancella</button>
+    </div>
+    <div class="hist-list">${items}</div>
+  </div>`;
+}
+
+function attachHistoryHandlers(rootEl) {
+  const clr = rootEl.querySelector('#hist-clear-btn');
+  if (clr) clr.addEventListener('click', clearHistory);
+  rootEl.querySelectorAll('.hist-item').forEach(b => {
+    b.addEventListener('click', () => {
+      document.getElementById('bIn').value = `${b.dataset.hL} ${b.dataset.hC}`;
+      searchBible();
+    });
+  });
+}
+
+// ═══════════════════════════════════════════════
 // BIBLE INDEX (66 books → chapter selector)
 // ═══════════════════════════════════════════════
 function showBookList() {
@@ -367,11 +404,13 @@ function showBookList() {
     list.map(b => `<button class="bk-btn" data-bnum="${b[0]}" data-blabel="${escHtml(b[2])}" data-bchap="${b[3]}">${escHtml(b[2])}</button>`).join('') +
     `</div>`;
   const html =
+    renderHistoryHtml() +
     `<div class="info-box" style="font-size:14px">Tocca un libro per vedere i suoi capitoli, oppure usa la barra qui sopra per cercare un passo specifico (es. <em>Giovanni 3:16</em>).</div>` +
     `<div class="tt-head">Antico Testamento &middot; 39 libri</div>` + renderGroup(ot) +
     `<div class="tt-head">Nuovo Testamento &middot; 27 libri</div>` + renderGroup(nt);
   const el = document.getElementById('bcontent');
   el.innerHTML = html;
+  attachHistoryHandlers(el);
   el.querySelectorAll('.bk-btn').forEach(b => {
     b.addEventListener('click', () => showChapterList(parseInt(b.dataset.bnum), b.dataset.blabel, parseInt(b.dataset.bchap)));
   });
@@ -599,6 +638,7 @@ async function searchBible() {
     const back = document.getElementById('back-to-books-r');
     if (back) back.addEventListener('click', () => { document.getElementById('bIn').value = ''; showBookList(); });
     if (fullChapter) attachChapNav(el);
+    saveToHistory(p.num, p.ch, p.label);
     document.getElementById('p-bibbia').scrollTop = 0;
 
   } catch(e) {
@@ -629,7 +669,21 @@ function attachChapNav(rootEl) {
       document.getElementById('bIn').value = `${b.dataset.navL} ${b.dataset.navC}`;
       searchBible();
     });
-  });l 4:1–5).",nt:"Mt 24:30: «vedrete il Figlio dell'uomo venire sulle nuvole con potenza e grande gloria». 1 Ts 4:13–17: i morti in Cristo risorgeranno; i viventi saranno trasformati (1 Cor 15:51–52).",t:"Speranza beata della Chiesa (Tt 2:13). Segna il compimento del regno di Dio, il giudizio universale, la resurrezione, la nuova creazione.",og:"Purifica il credente (1 Gv 3:2–3), motiva la missione (Mt 24:14), consola nelle sofferenze. «Vieni, Signore Gesù!» (Ap 22:20)."},
+  });
+}
+
+// Mostra l'indice dei 66 libri all'avvio
+showBookList();
+
+// ═══════════════════════════════════════════════
+// DIZIONARIO LOCALE
+// ═══════════════════════════════════════════════
+const DICT = {
+  grazia:{s:"Ebraico <strong>ḥen</strong> (favore gratuito), greco <strong>charis</strong> (dono immeritato). La grazia è il cuore del Vangelo.",at:"Noè «trovò grazia agli occhi dell'Eterno» (Gen 6:8). Dio rivela il suo carattere: «misericordioso, clemente, lento all'ira e ricco in bontà» (Es 34:6). La grazia precede ogni merito umano.",nt:"Paolo pone la grazia al cuore del Vangelo: <em>«Per grazia siete stati salvati mediante la fede; e ciò non viene da voi; è il dono di Dio»</em> (Ef 2:8). La grazia abbonda laddove abbondò il peccato (Rm 5:20).",t:"La grazia è l'atto sovrano con cui Dio si volge verso il peccatore con amore immeritato, lo perdona, lo giustifica e lo trasforma. È la fonte della salvezza e il fondamento di tutta la vita cristiana.",og:"Il credente vive «sotto la grazia» (Rm 6:14): risponde all'amore di Dio con gratitudine e obbedienza. La grazia non elimina l'impegno etico, ma lo rende possibile e gioioso."},
+  fede:{s:"Ebraico <strong>emunah</strong> (fermezza, fedeltà), greco <strong>pistis</strong> (fiducia, credenza, lealtà). Non semplice assenso intellettuale ma fiducia totale.",at:"Abraamo credette a Dio e gli fu imputato a giustizia (Gen 15:6). La fede si manifesta nell'obbedienza fiduciosa. Abacuc: «Il giusto vivrà per la sua fede» (Ab 2:4).",nt:"Eb 11:1: «la fede è certezza delle cose sperate, dimostrazione di quelle non viste». Ef 2:8: mezzo della salvezza. Giacomo: la fede vera produce opere (Gc 2:17).",t:"La vera fede ha tre dimensioni: <em>notitia</em> (conoscenza), <em>assensus</em> (assenso) e <em>fiducia</em> (abbandono personale a Cristo). Non è forza di volontà umana ma risposta allo Spirito Santo.",og:"La fede si nutre della Parola (Rm 10:17). «Senza fede è impossibile piacergli» (Eb 11:6). Il credente cammina «per fede, non per visione» (2 Cor 5:7)."},
+  salvezza:{s:"Ebraico <strong>yeshu'ah</strong>, greco <strong>soteria</strong> (liberazione totale — corporea, spirituale, eterna).",at:"Dio libera Israele dall'Egitto (Es 14–15). I profeti anticipano una salvezza universale (Is 45:22; 49:6). «La salvezza appartiene all'Eterno» (Sal 3:8).",nt:"Salvezza passata (giustificazione, Rm 5:1), presente (santificazione, Fil 2:12) e futura (glorificazione, Rm 8:23). Abbraccia perdono, riconciliazione, rigenerazione, vita eterna.",t:"Opera esclusiva di Dio: il Padre la pianifica, il Figlio la compie, lo Spirito la applica. L'uomo non può contribuirvi con opere proprie (Ef 2:9).",og:"Il credente è «salvato», «si sta salvando» e «sarà salvato». Genera gratitudine, adorazione e impegno missionario (Rm 10:14–15)."},
+  espiazione:{s:"Ebraico <strong>kippùr</strong> (coprire, cancellare), greco <strong>hilasmos</strong> (propiziazione). Rimozione della colpa e della conseguente ira divina.",at:"Sistema sacrificale: il sangue copre il peccato. Yom Kippur (Lv 16): il sommo sacerdote entra nel Santo dei Santi con il sangue per tutto Israele.",nt:"Gesù compie quanto i sacrifici prefiguravano. <em>«Egli è propiziazione per i nostri peccati»</em> (1 Gv 2:2). «Senza spargimento di sangue non vi è remissione» (Eb 9:22).",t:"Risolve il problema della santità di Dio di fronte al peccato umano. La croce è dove giustizia e misericordia si incontrano (Sal 85:10). Cristo è insieme sommo sacerdote e vittima.",og:"Per il credente: pace con Dio (Rm 5:1), coscienza purificata (Eb 10:22), libertà dalla condanna (Rm 8:1). Vita cristiana come risposta grata al prezzo pagato."},
+  parousia:{s:"Greco <strong>parousia</strong> (presenza, venuta, arrivo ufficiale di un re). Il ritorno glorioso di Cristo alla fine dei tempi.",at:"Dn 7:13–14: «Figlio dell'uomo» che viene sulle nuvole. «Giorno dell'Eterno» dei profeti (Gl 2:31; Ml 4:1–5).",nt:"Mt 24:30: «vedrete il Figlio dell'uomo venire sulle nuvole con potenza e grande gloria». 1 Ts 4:13–17: i morti in Cristo risorgeranno; i viventi saranno trasformati (1 Cor 15:51–52).",t:"Speranza beata della Chiesa (Tt 2:13). Segna il compimento del regno di Dio, il giudizio universale, la resurrezione, la nuova creazione.",og:"Purifica il credente (1 Gv 3:2–3), motiva la missione (Mt 24:14), consola nelle sofferenze. «Vieni, Signore Gesù!» (Ap 22:20)."},
   shalom:{s:"Ebraico <strong>shalom</strong> (integrità, completezza, benessere totale). Non semplice assenza di guerra ma pienezza di vita.",at:"Il dono di Dio ad Israele: «L'Eterno conceda la pace» (Nm 6:26). Il re messianico è «Principe della pace» (Is 9:5).",nt:"Gesù dona la pace che il mondo non può dare (Gv 14:27). Riconciliazione mediante il sangue della croce (Col 1:20). Paolo saluta sempre con «grazia e pace».",t:"Descrive lo stato di chi è in giusta relazione con Dio, il prossimo e il creato. Fine ultimo della redenzione. «La pace di Dio... guarderà i vostri cuori» (Fil 4:7).",og:"Il credente è chiamato a costruire shalom nel matrimonio, nella famiglia, nella chiesa, nella società (Mt 5:9)."},
   pentecoste:{s:"Greco <strong>Pentekostē</strong> (cinquantesimo giorno). Festa ebraica Shavuot: cinquanta giorni dopo la Pasqua.",at:"Festa del raccolto (Lv 23:15–21). Tradizione rabbinica: dono della Torah al Sinai. Gioele profetizza l'effusione dello Spirito (Gl 2:28–32).",nt:"At 2: lo Spirito scende come lingue di fuoco. Pietro cita Gioele. Tremila si convertono: nasce la Chiesa. Compimento della nuova alleanza.",t:"Passaggio dall'era della Legge all'era dello Spirito. La Legge scritta nel cuore (Ger 31:31–33). Lo Spirito: presenza permanente di Dio nella Chiesa (1 Cor 3:16).",og:"Ogni credente è tempio dello Spirito. I doni edificano la Chiesa; il frutto (Gal 5:22–23) trasforma il carattere."},
   redenzione:{s:"Ebraico <strong>ga'al/padah</strong> (riscattare pagando un prezzo), greco <strong>apolutrosis</strong> (liberazione mediante riscatto).",at:"Il go'el (parente redentore) riscatta dalla schiavitù (Lv 25:25; Rt 4). Dio redime Israele dall'Egitto (Es 6:6) e da Babilonia (Is 43:1).",nt:"«Il Figlio dell'uomo è venuto per dare la sua vita in riscatto per molti» (Mt 20:28). «La redenzione mediante il suo sangue, il perdono dei peccati» (Ef 1:7).",t:"Presuppone schiavitù, richiede riscatto, ottiene liberazione. Il prezzo: sangue di Cristo (1 Pt 1:18–19). Il risultato: appartenenza a Dio.",og:"Il redento non vive più per sé ma per Cristo (2 Cor 5:15). La redenzione passata garantisce quella futura: liberazione del corpo alla risurrezione (Rm 8:23)."},
