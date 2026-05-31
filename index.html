@@ -171,8 +171,13 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
   <button class="ver-btn" data-ver="AMP">AMP</button>
 </div>
 <div class="sbar" id="sbar-diz">
-  <input id="dIn" placeholder="Es: grazia, fede, espiazione, parousia&hellip;" autocomplete="off" spellcheck="false">
+  <input id="dIn" placeholder="Cerca un termine biblico&hellip;" autocomplete="off" autocorrect="off" spellcheck="false">
   <button class="btn" id="btn-diz">CERCA</button>
+</div>
+<div class="ver-bar" id="dict-bar">
+  <span class="ver-lbl">Fonte:</span>
+  <button class="ver-btn on" data-dict="schaff">Dizionario Biblico</button>
+  <button class="ver-btn" data-dict="wikt">Dizionario Italiano</button>
 </div>
 
 <div class="panels">
@@ -193,9 +198,8 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       Scegli la versione dalla barra in alto: <strong style="color:var(--gold2)">Nuova Riveduta</strong>, <strong style="color:var(--gold2)">Nuova Diodati</strong>, <strong style="color:var(--gold2)">KJV</strong> (con numeri Strong cliccabili), <strong style="color:var(--gold2)">NKJV</strong> o <strong style="color:var(--gold2)">AMP</strong>. Tutte le versioni sono disponibili offline.
     </p>
     <p style="font-size:16px;color:var(--mu);line-height:1.8">
-      <strong style="color:var(--tx2)">Dizionario</strong> &mdash; approfondisci termini come
-      <em style="color:var(--gold2)">grazia</em>, <em style="color:var(--gold2)">espiazione</em>, <em style="color:var(--gold2)">parousia</em>&hellip;
-      Se un termine non &egrave; nelle 23 voci curate, l'app cerca automaticamente su <strong style="color:var(--gold2)">Wikipedia in italiano</strong>.
+      <strong style="color:var(--tx2)">Dizionario</strong> &mdash; 4.197 voci bibliche del <strong style="color:var(--gold2)">Dizionario Biblico</strong> in italiano: persone, luoghi, termini teologici.
+      I riferimenti biblici nelle definizioni sono cliccabili e aprono direttamente il versetto.
     </p>
   </div>
 
@@ -205,16 +209,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 
   <div class="panel" id="p-diz">
     <div class="stitle">Dizionario Biblico</div>
-    <div id="dcontent">
-      <div class="empty">
-        <div class="empty-ico">&#128218;</div>
-        <div style="font-size:14px;line-height:1.6">Cerca un termine oppure scegli<br>uno dei suggerimenti qui sotto.</div>
-      </div>
-      <div class="sug-wrap">
-        <div class="sug-title">Termini disponibili</div>
-        <div class="sug-list" id="sug-main"></div>
-      </div>
-    </div>
+    <div id="dcontent"></div>
   </div>
 
 </div>
@@ -242,6 +237,7 @@ function showTab(name) {
   document.getElementById('sbar-bibbia').classList.toggle('show', name==='bibbia');
   document.getElementById('sbar-diz').classList.toggle('show', name==='diz');
   document.getElementById('ver-bar').classList.toggle('show', name==='bibbia');
+  document.getElementById('dict-bar').classList.toggle('show', name==='diz');
 }
 document.querySelectorAll('.tab').forEach(t => {
   t.addEventListener('click', () => showTab(t.dataset.tab));
@@ -742,86 +738,136 @@ showBookList();
 // DIZIONARIO LOCALE
 // ═══════════════════════════════════════════════
 // ═══════════════════════════════════════════════
-// DIZIONARIO BIBLICO SCHAFF (locale)
+// DIZIONARI — Schaff (locale) + Wiktionary (online)
 // ═══════════════════════════════════════════════
 const dictCache = {};
+let currentDict = 'schaff';
+
+function normDct(s){
+  return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9 ]/g,' ').trim();
+}
+
+// Bottoni selezione dizionario
+document.querySelectorAll('.ver-btn[data-dict]').forEach(function(b){
+  b.addEventListener('click', function(){
+    if (b.dataset.dict === currentDict) return;
+    currentDict = b.dataset.dict;
+    document.querySelectorAll('.ver-btn[data-dict]').forEach(function(x){
+      x.classList.toggle('on', x.dataset.dict === currentDict);
+    });
+    document.getElementById('dIn').placeholder = currentDict === 'schaff'
+      ? 'Cerca un termine biblico\u2026' : 'Cerca una parola italiana\u2026';
+    var q = document.getElementById('dIn').value.trim();
+    if (q) searchDict(); else showDictHome();
+  });
+});
 
 async function loadSchaff() {
   if (dictCache.schaff) return dictCache.schaff;
-  const resp = await fetch('dicts/schaff.json');
-  if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+  var resp = await fetch('dicts/schaff.json');
+  if (!resp.ok) throw new Error('HTTP ' + resp.status + ' — dicts/schaff.json');
   dictCache.schaff = await resp.json();
   return dictCache.schaff;
 }
 
-function normDct(s){ return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9\s]/g,' ').trim(); }
-
 async function searchDict() {
-  const raw = document.getElementById('dIn').value.trim();
+  var raw = document.getElementById('dIn').value.trim();
   if (!raw) return;
-  const el = document.getElementById('dcontent');
+  var el = document.getElementById('dcontent');
   el.innerHTML = '<div class="spinner"></div>';
   showTab('diz');
   try {
-    const data = await loadSchaff();
-    const q = normDct(raw);
-    let found = Object.keys(data).find(k => normDct(k) === q);
-    if (!found) found = Object.keys(data).find(k => normDct(k).startsWith(q));
-    if (!found) found = Object.keys(data).find(k => normDct(k).includes(q));
-    if (found) {
-      renderSchaffEntry(found, data[found], el);
+    if (currentDict === 'schaff') {
+      await searchSchaff(raw, el);
     } else {
-      const suggestions = Object.keys(data).filter(k => normDct(k).includes(q.split(' ')[0])).slice(0, 12);
-      let h = `<div class="err">«${escHtml(raw)}» non trovato nel Dizionario Biblico.</div>`;
-      if (suggestions.length) {
-        h += `<div class="sug-wrap"><div class="sug-title">Forse cercavi</div><div class="sug-list">` +
-          suggestions.map(k => `<button class="sug-btn" onclick="document.getElementById('dIn').value=${JSON.stringify(k)};searchDict()">${escHtml(k)}</button>`).join('') +
-          `</div></div>`;
-      }
-      el.innerHTML = h;
+      await searchWikt(raw, el);
     }
   } catch(e) {
-    el.innerHTML = `<div class="err">Errore caricamento dizionario: ${escHtml(e.message)}<br>Assicurati che <code>dicts/schaff.json</code> sia nella repo.</div>`;
+    el.innerHTML = '<div class="err">Errore: ' + escHtml(e.message) + '</div>';
+  }
+}
+
+async function searchSchaff(raw, el) {
+  var data = await loadSchaff();
+  var q = normDct(raw);
+  var keys = Object.keys(data);
+  var found = keys.find(function(k){ return normDct(k) === q; });
+  if (!found) found = keys.find(function(k){ return normDct(k).startsWith(q); });
+  if (!found) found = keys.find(function(k){ return normDct(k).includes(q); });
+  if (found) {
+    renderSchaffEntry(found, data[found], el);
+  } else {
+    var firstWord = q.split(' ')[0];
+    var suggestions = keys.filter(function(k){ return normDct(k).includes(firstWord); }).slice(0,12);
+    var h = '<div class="err">\u00ab' + escHtml(raw) + '\u00bb non trovato nel Dizionario Biblico.</div>';
+    if (suggestions.length) {
+      h += '<div class="sug-wrap"><div class="sug-title">Forse cercavi</div><div class="sug-list">' +
+        suggestions.map(function(k){
+          return '<button class="sug-btn" onclick="document.getElementById(\'dIn\').value=' + JSON.stringify(k) + ';searchDict()">' + escHtml(k) + '</button>';
+        }).join('') + '</div></div>';
+    }
+    el.innerHTML = h;
   }
 }
 
 function renderSchaffEntry(word, text, el) {
-  let body = text
-    .replace(/\\/g, '')
-    .replace(/<a href="b([^"]+)">([^<]+)<\/a>/gi, (_, ref, label) => {
-      return `<button class="dict-ref-btn" onclick="document.getElementById('bIn').value=${JSON.stringify(label)};searchBible();showTab('bibbia')">${escHtml(label)}</button>`;
+  var body = text
+    .replace(/\\\\/g, '')
+    .replace(/<a href="b([^"]+)">([^<]+)<\/a>/gi, function(_, ref, label){
+      return '<button class="dict-ref-btn" onclick="document.getElementById(\'bIn\').value=' + JSON.stringify(label) + ';searchBible();showTab(\'bibbia\')">' + escHtml(label) + '</button>';
     })
-    .replace(/&nbsp;/g, ' ')
+    .replace(/&nbsp;/g, ' ').trim();
+  el.innerHTML = '<div class="dict-card">' +
+    '<div class="dict-src-lbl">Dizionario Biblico</div>' +
+    '<div class="dict-term">' + escHtml(word) + '</div>' +
+    '<div class="dict-body">' + body + '</div>' +
+    '</div>';
+  document.getElementById('p-diz').scrollTop = 0;
+}
+
+async function searchWikt(raw, el) {
+  var url = 'https://it.wiktionary.org/w/api.php?action=query&titles=' + encodeURIComponent(raw) + '&prop=extracts&exintro=1&format=json&origin=*';
+  var resp = await fetch(url);
+  if (!resp.ok) throw new Error('HTTP ' + resp.status);
+  var data = await resp.json();
+  var pages = data.query.pages;
+  var page = Object.values(pages)[0];
+  if (page.missing !== undefined || !page.extract) {
+    el.innerHTML = '<div class="err">\u00ab' + escHtml(raw) + '\u00bb non trovato nel Dizionario Italiano.</div>';
+    return;
+  }
+  var body = page.extract
+    .replace(/<h[1-6][^>]*>[\s\S]*?<\/h[1-6]>/gi, '')
+    .replace(/<style[\s\S]*?<\/style>/gi, '')
     .trim();
-  el.innerHTML = `
-    <div class="dict-card">
-      <div class="dict-src-lbl">Dizionario Biblico — Schaff</div>
-      <div class="dict-term">${escHtml(word)}</div>
-      <div class="dict-body">${body}</div>
-    </div>`;
+  el.innerHTML = '<div class="dict-card">' +
+    '<div class="dict-src-lbl">Dizionario Italiano \u2014 Wiktionary</div>' +
+    '<div class="dict-term">' + escHtml(page.title || raw) + '</div>' +
+    '<div class="dict-body">' + body + '</div>' +
+    '</div>';
   document.getElementById('p-diz').scrollTop = 0;
 }
 
 function showDictHome() {
-  const el = document.getElementById('dcontent');
-  el.innerHTML = `
-    <div class="sug-wrap">
-      <div class="sug-title">Termini biblici</div>
-      <div class="sug-list" id="sug-main"></div>
-    </div>`;
-  const terms = ['Grazia','Fede','Salvezza','Pentecoste','Spirito Santo','Gesù Cristo',
+  var el = document.getElementById('dcontent');
+  if (!el) return;
+  el.innerHTML = '<div class="sug-wrap"><div class="sug-title">Termini biblici</div><div class="sug-list" id="sug-main"></div></div>';
+  var terms = ['Grazia','Fede','Salvezza','Pentecoste','Spirito Santo','Ges\u00f9 Cristo',
     'Resurrezione','Alleanza','Profezia','Battesimo','Redenzione','Giustificazione',
-    'Peccato','Perdono','Trinità','Preghiera','Espiazione','Santificazione'];
-  const c = document.getElementById('sug-main');
-  terms.forEach(t => {
-    const b = document.createElement('button'); b.className = 'sug-btn'; b.textContent = t;
-    b.onclick = () => { document.getElementById('dIn').value = t; searchDict(); };
+    'Peccato','Perdono','Trinit\u00e0','Preghiera','Espiazione','Santificazione'];
+  var c = document.getElementById('sug-main');
+  terms.forEach(function(t){
+    var b = document.createElement('button');
+    b.className = 'sug-btn';
+    b.textContent = t;
+    b.addEventListener('click', function(){ document.getElementById('dIn').value = t; searchDict(); });
     c.appendChild(b);
   });
 }
 
-// Init
-(function(){ showDictHome(); })();
+// Avvia dopo che il DOM è pronto
+document.addEventListener('DOMContentLoaded', function(){ showDictHome(); });
+if (document.readyState !== 'loading') showDictHome();
 
 // ══════════════════════════════════════════════
 // PWA — Manifest + Service Worker + Banner
