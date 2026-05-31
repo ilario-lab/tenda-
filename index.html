@@ -177,7 +177,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 <div class="ver-bar" id="dict-bar">
   <span class="ver-lbl">Fonte:</span>
   <button class="ver-btn on" data-dict="schaff">Dizionario Biblico</button>
-  <button class="ver-btn" data-dict="wikt">Dizionario Italiano</button>
+  <button class="ver-btn" data-dict="wikt">Italiano (Wikipedia)</button>
 </div>
 
 <div class="panels">
@@ -826,26 +826,52 @@ function renderSchaffEntry(word, text, el) {
 }
 
 async function searchWikt(raw, el) {
-  var url = 'https://it.wiktionary.org/w/api.php?action=query&titles=' + encodeURIComponent(raw) + '&prop=extracts&exintro=1&format=json&origin=*';
-  var resp = await fetch(url);
-  if (!resp.ok) throw new Error('HTTP ' + resp.status);
-  var data = await resp.json();
-  var pages = data.query.pages;
-  var page = Object.values(pages)[0];
-  if (page.missing !== undefined || !page.extract) {
-    el.innerHTML = '<div class="err">\u00ab' + escHtml(raw) + '\u00bb non trovato nel Dizionario Italiano.</div>';
-    return;
+  // Prima prova Wikipedia italiana (REST API)
+  var url = 'https://it.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(raw);
+  try {
+    var resp = await fetch(url, { headers: { 'Accept': 'application/json' } });
+    if (resp.ok) {
+      var data = await resp.json();
+      if (data.extract) {
+        var body = '<p>' + escHtml(data.extract) + '</p>';
+        if (data.content_urls && data.content_urls.desktop) {
+          body += '<a class="popup-ext" href="' + data.content_urls.desktop.page + '" target="_blank" rel="noopener">Leggi su Wikipedia \u2192</a>';
+        }
+        el.innerHTML = '<div class="dict-card">' +
+          '<div class="dict-src-lbl">Dizionario Italiano \u2014 Wikipedia</div>' +
+          '<div class="dict-term">' + escHtml(data.title || raw) + '</div>' +
+          '<div class="dict-body">' + body + '</div>' +
+          '</div>';
+        document.getElementById('p-diz').scrollTop = 0;
+        return;
+      }
+    }
+  } catch(e) {}
+  // Fallback: cerca con titolo capitalizzato
+  var cap = raw.charAt(0).toUpperCase() + raw.slice(1);
+  if (cap !== raw) {
+    try {
+      var resp2 = await fetch('https://it.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(cap));
+      if (resp2.ok) {
+        var data2 = await resp2.json();
+        if (data2.extract) {
+          var body2 = '<p>' + escHtml(data2.extract) + '</p>';
+          if (data2.content_urls && data2.content_urls.desktop) {
+            body2 += '<a class="popup-ext" href="' + data2.content_urls.desktop.page + '" target="_blank" rel="noopener">Leggi su Wikipedia \u2192</a>';
+          }
+          el.innerHTML = '<div class="dict-card">' +
+            '<div class="dict-src-lbl">Dizionario Italiano \u2014 Wikipedia</div>' +
+            '<div class="dict-term">' + escHtml(data2.title || raw) + '</div>' +
+            '<div class="dict-body">' + body2 + '</div>' +
+            '</div>';
+          document.getElementById('p-diz').scrollTop = 0;
+          return;
+        }
+      }
+    } catch(e) {}
   }
-  var body = page.extract
-    .replace(/<h[1-6][^>]*>[\s\S]*?<\/h[1-6]>/gi, '')
-    .replace(/<style[\s\S]*?<\/style>/gi, '')
-    .trim();
-  el.innerHTML = '<div class="dict-card">' +
-    '<div class="dict-src-lbl">Dizionario Italiano \u2014 Wiktionary</div>' +
-    '<div class="dict-term">' + escHtml(page.title || raw) + '</div>' +
-    '<div class="dict-body">' + body + '</div>' +
-    '</div>';
-  document.getElementById('p-diz').scrollTop = 0;
+  el.innerHTML = '<div class="err">\u00ab' + escHtml(raw) + '\u00bb non trovato.<br>' +
+    '<a class="popup-ext" href="https://it.wikipedia.org/wiki/' + encodeURIComponent(raw) + '" target="_blank" rel="noopener">Cerca su Wikipedia \u2192</a></div>';
 }
 
 function showDictHome() {
