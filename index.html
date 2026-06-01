@@ -123,6 +123,22 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .ver-btn.on{background:var(--gold);color:#0D0B07;border-color:var(--gold)}
 .ver-btn:hover:not(.on){background:var(--s2);color:var(--gold);border-color:var(--gold)}
 .ver2-label{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:var(--mu);margin-bottom:12px}
+.medit{background:linear-gradient(160deg,var(--s2),var(--s3));border:1px solid var(--gbr);border-radius:12px;padding:20px 22px;margin-bottom:22px;position:relative;box-shadow:0 4px 24px rgba(0,0,0,.35),inset 0 1px 0 rgba(212,168,67,0.12)}
+.medit::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(212,168,67,0.4),transparent)}
+.medit-lbl{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.medit-lbl::after{content:'';flex:1;height:1px;background:var(--gb)}
+.medit-body{font-size:16px;line-height:1.85;color:var(--tx2)}
+.medit-lbl-icon{font-size:13px}
+#medit-content{font-size:16px;line-height:1.85;color:var(--tx2)}
+#medit-content p{margin:0 0 12px}
+#medit-content p:last-child{margin:0}
+.preghiera{font-style:italic;color:var(--gold2);border-left:2px solid var(--gold3);padding-left:12px;margin-top:14px}
+.medit-gen{display:flex;justify-content:center;margin-top:14px}
+.medit-btn{background:none;border:1px solid var(--gb);border-radius:20px;padding:6px 18px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--mu);cursor:pointer;transition:all .2s}
+.medit-btn:hover:not(:disabled){border-color:var(--gold);color:var(--gold)}
+.medit-btn:disabled{opacity:.4;cursor:default}
+.medit-loading{text-align:center;padding:16px 0;color:var(--mu);font-size:14px;font-style:italic}
+.medit-err{color:var(--mu);font-size:14px;font-style:italic;text-align:center;padding:10px 0}
 .dict-ref-btn{background:none;border:none;color:var(--blue);font-family:'EB Garamond',serif;font-size:inherit;cursor:pointer;padding:0;text-decoration:underline;text-decoration-color:rgba(123,158,200,0.5)}
 .dict-ref-btn:hover{color:var(--blue2)}
 .dict-src-lbl{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.25em;text-transform:uppercase;color:var(--mu);margin-bottom:6px}
@@ -187,6 +203,11 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       <div class="votd-lbl">Versetto del Giorno <span class="votd-date" id="vdate"></span></div>
       <div class="votd-txt" id="vtxt"></div>
       <div class="votd-ref" id="vref"></div>
+    </div>
+    <div class="medit" id="medit-box">
+      <div class="medit-lbl"><span class="medit-lbl-icon">&#x1F54A;</span> Meditazione del Giorno</div>
+      <div id="medit-content" class="medit-loading">Premi il pulsante per ricevere la meditazione di oggi.</div>
+      <div class="medit-gen"><button class="medit-btn" id="medit-btn" onclick="generateMedit()">&#x21BA; Aggiorna</button></div>
     </div>
     <div class="ornament">&#10014; &nbsp; &#10022; &nbsp; &#10014;</div>
     <div class="stitle">Come usare l'app</div>
@@ -894,6 +915,85 @@ function showDictHome() {
 // Avvia dopo che il DOM è pronto
 document.addEventListener('DOMContentLoaded', function(){ showDictHome(); });
 if (document.readyState !== 'loading') showDictHome();
+
+// ═══════════════════════════════════════════════
+// MEDITAZIONE GIORNALIERA — da meditazione.json
+// ═══════════════════════════════════════════════
+(function initMedit() {
+  var today = new Date().toISOString().slice(0,10);
+  var cached = null;
+  try { cached = JSON.parse(localStorage.getItem('medit_' + today)); } catch(e){}
+  if (cached && cached.testo) { renderMedit(cached); return; }
+  // Carica automaticamente senza aspettare il click
+  loadMedit();
+})();
+
+async function loadMedit() {
+  var btn = document.getElementById('medit-btn');
+  var content = document.getElementById('medit-content');
+  var today = new Date().toISOString().slice(0,10);
+
+  // Controlla cache
+  var cached = null;
+  try { cached = JSON.parse(localStorage.getItem('medit_' + today)); } catch(e){}
+  if (cached && cached.testo) { renderMedit(cached); return; }
+
+  if (btn) { btn.disabled = true; btn.textContent = 'Caricamento…'; }
+  content.innerHTML = '<div class="medit-loading">Caricamento meditazione di oggi…</div>';
+
+  try {
+    var resp = await fetch('meditazione.json?t=' + Date.now());
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    var data = await resp.json();
+
+    // Verifica che sia di oggi o accetta comunque
+    var obj = {
+      data: data.data || '',
+      riferimento: data.riferimento || '',
+      versetto: data.versetto || '',
+      testo: data.meditazione || ''
+    };
+    try { localStorage.setItem('medit_' + today, JSON.stringify(obj)); } catch(e){}
+    renderMedit(obj);
+  } catch(e) {
+    content.innerHTML = '<div class="medit-err">Meditazione non disponibile.<br><small>Verifica che il workflow GitHub Actions sia attivo.</small></div>';
+    if (btn) { btn.disabled = false; btn.textContent = '↺ Riprova'; }
+  }
+}
+
+// generateMedit rimane come alias per compatibilità col bottone
+function generateMedit() {
+  var today = new Date().toISOString().slice(0,10);
+  try { localStorage.removeItem('medit_' + today); } catch(e){}
+  loadMedit();
+}
+
+function renderMedit(obj) {
+  var btn = document.getElementById('medit-btn');
+  var content = document.getElementById('medit-content');
+  var text = obj.testo || '';
+  var parts = text.split(/\n+/);
+  var bodyParts = [];
+  var prayerParts = [];
+  var inPrayer = false;
+  parts.forEach(function(p) {
+    p = p.trim();
+    if (!p) return;
+    if (p.startsWith('Signore,') || p.startsWith('Signore ')) inPrayer = true;
+    if (inPrayer) prayerParts.push(p);
+    else bodyParts.push(p);
+  });
+  var html = bodyParts.map(function(p){ return '<p>' + escHtml(p) + '</p>'; }).join('');
+  if (prayerParts.length) {
+    html += '<div class="preghiera">' + prayerParts.map(function(p){ return escHtml(p); }).join('<br>') + '</div>';
+  }
+  if (obj.data) {
+    html += '<div style="text-align:right;margin-top:10px;font-size:11px;color:var(--mu);font-family:'Cinzel',serif">' + escHtml(obj.data) + '</div>';
+  }
+  content.innerHTML = html;
+  if (btn) { btn.textContent = '↺ Aggiorna'; btn.disabled = false; }
+}
+
 
 // ══════════════════════════════════════════════
 // PWA — Manifest + Service Worker + Banner
