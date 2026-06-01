@@ -752,8 +752,7 @@ function attachChapNav(rootEl) {
   });
 }
 
-// Mostra l'indice dei 66 libri all'avvio
-showBookList();
+// showBookList() viene chiamato da startApp() dopo DOMContentLoaded
 
 // ═══════════════════════════════════════════════
 // DIZIONARIO LOCALE
@@ -917,6 +916,7 @@ function showDictHome() {
 // ═══════════════════════════════════════════════
 function startApp() {
   initVOTD();
+  showBookList();
   showDictHome();
   loadMedit();
 }
@@ -1014,7 +1014,7 @@ function renderMedit(obj) {
     name: 'Tenda di Convegno',
     short_name: 'Tenda',
     description: 'Bibbia (5 versioni offline), versetto del giorno e dizionario biblico',
-    start_url: './',
+    start_url: '/',
     display: 'standalone',
     orientation: 'any',
     background_color: '#0D0B07',
@@ -1037,9 +1037,9 @@ function renderMedit(obj) {
       self.addEventListener('activate', () => self.clients.claim());
       self.addEventListener('fetch', e => e.respondWith(fetch(e.request).catch(() => new Response('Offline', { status: 503 }))));
     `;
-    navigator.serviceWorker.register(
-      URL.createObjectURL(new Blob([swCode], { type: 'application/javascript' }))
-    ).catch(() => {});
+    // SW via blob non supportato su GitHub Pages - skip
+    // Il manifest è sufficiente per l'installabilità base
+    
   }
 
   // Banner installazione
