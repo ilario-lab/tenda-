@@ -320,7 +320,7 @@ const VOTD=[
   ["Deuteronomio 31:6","Sii forte e coraggioso; non temere e non ti spaventare di loro; poiché l'Eterno Iddio tuo è colui che cammina con te."],
   ["Giovanni 8:32","E conoscerete la verità, e la verità vi farà liberi."],
 ];
-(function(){
+function initVOTD(){
   const n=new Date();
   const days=['Domenica','Lunedì','Martedì','Mercoledì','Giovedì','Venerdì','Sabato'];
   const months=['gennaio','febbraio','marzo','aprile','maggio','giugno','luglio','agosto','settembre','ottobre','novembre','dicembre'];
@@ -329,7 +329,7 @@ const VOTD=[
   const v=VOTD[day%VOTD.length];
   document.getElementById('vtxt').textContent=v[1];
   document.getElementById('vref').textContent='— '+v[0];
-})();
+}
 
 // ═══════════════════════════════════════════════
 // BIBLE BOOK MAP
@@ -919,14 +919,12 @@ if (document.readyState !== 'loading') showDictHome();
 // ═══════════════════════════════════════════════
 // MEDITAZIONE GIORNALIERA — da meditazione.json
 // ═══════════════════════════════════════════════
-(function initMedit() {
-  var today = new Date().toISOString().slice(0,10);
-  var cached = null;
-  try { cached = JSON.parse(localStorage.getItem('medit_' + today)); } catch(e){}
-  if (cached && cached.testo) { renderMedit(cached); return; }
-  // Carica automaticamente senza aspettare il click
+// Avvia tutto dopo che il DOM è pronto
+document.addEventListener('DOMContentLoaded', function() {
+  initVOTD();
   loadMedit();
-})();
+});
+if (document.readyState !== 'loading') { initVOTD(); loadMedit(); }
 
 async function loadMedit() {
   var btn = document.getElementById('medit-btn');
@@ -956,7 +954,11 @@ async function loadMedit() {
     try { localStorage.setItem('medit_' + today, JSON.stringify(obj)); } catch(e){}
     renderMedit(obj);
   } catch(e) {
-    content.innerHTML = '<div class="medit-err">Meditazione non disponibile.<br><small>Verifica che il workflow GitHub Actions sia attivo.</small></div>';
+    if (e.message.includes('404') || e.message.includes('HTTP 4')) {
+      content.innerHTML = '<div class="medit-err">La meditazione di oggi non è ancora disponibile.<br><small>Avvia il workflow GitHub Actions manualmente dalla tua repo.</small></div>';
+    } else {
+      content.innerHTML = '<div class="medit-err">Errore caricamento.<br><small>' + e.message + '</small></div>';
+    }
     if (btn) { btn.disabled = false; btn.textContent = '↺ Riprova'; }
   }
 }
