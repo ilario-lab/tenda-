@@ -1,0 +1,94 @@
+import urllib.request, json, datetime, os
+
+VOTD = [
+    ["Giovanni 3:16", "Poiche Iddio ha tanto amato il mondo, che ha dato il suo unigenito Figliuolo, acciocche chiunque crede in lui non perisca, ma abbia vita eterna."],
+    ["Filippesi 4:13", "Io posso ogni cosa in Cristo che mi fortifica."],
+    ["Geremia 29:11", "Poiche io so i pensieri che medito a vostro riguardo, dice l'Eterno: pensieri di pace e non di male, per darvi un avvenire e una speranza."],
+    ["Isaia 40:31", "Ma coloro che sperano nell'Eterno riacquistano le forze; si alzano a volo come aquile."],
+    ["Salmi 23:1", "L'Eterno e il mio pastore: nulla mi manchera."],
+    ["Romani 8:28", "E sappiamo che tutte le cose cooperano al bene di quelli che amano Iddio."],
+    ["Proverbi 3:5", "Confida nell'Eterno con tutto il tuo cuore e non ti appoggiare sul tuo proprio intendimento."],
+    ["Matteo 11:28", "Venite a me, voi tutti che siete travagliati ed aggravati, e io vi daro riposo."],
+    ["Salmi 46:1", "Iddio e il nostro rifugio e la nostra forza, un aiuto sempre pronto nelle distrette."],
+    ["Giosuè 1:9", "Sii forte e coraggioso; non ti spaventare, poiche l'Eterno Iddio tuo e con te dovunque tu andrai."],
+    ["Romani 8:38", "Io son persuaso che ne morte, ne vita, ne angeli, ne principati potranno separarci dall'amore di Dio."],
+    ["Efesini 2:8", "Voi siete salvati per grazia, mediante la fede; e cio non viene da voi; e il dono di Dio."],
+    ["2 Timoteo 1:7", "Iddio non ci ha dato uno spirito di timidita, ma di forza, d'amore e di saggezza."],
+    ["Isaia 41:10", "Non temere, perche io sono con te; io ti fortifichero e ti soccorrero."],
+    ["Salmi 27:1", "L'Eterno e la mia luce e la mia salvezza; di chi temero?"],
+    ["Lamentazioni 3:22", "Le misericordie dell'Eterno non sono finite; la sua compassione non vien meno."],
+    ["Matteo 6:33", "Cercate prima il regno di Dio e la sua giustizia, e tutte queste cose vi saranno date in piu."],
+    ["Galati 5:22", "Il frutto dello Spirito e: amore, allegrezza, pace, longanimita, benignita, bonta, fedelta."],
+    ["Salmi 119:105", "La tua parola e una lampada al mio piede e una luce al mio sentiero."],
+    ["Apocalisse 21:4", "Egli asciughera ogni lacrima dagli occhi loro, e la morte non sara piu."],
+    ["Romani 5:8", "Mentre eravamo ancora peccatori, Cristo e morto per noi."],
+    ["1 Giovanni 4:8", "Chi non ama non ha conosciuto Iddio, perche Iddio e amore."],
+    ["Salmi 34:18", "L'Eterno e vicino a quelli che hanno il cuor rotto."],
+    ["Salmi 37:4", "Trova le tue delizie nell'Eterno, ed egli ti dara le richieste del tuo cuore."],
+    ["2 Corinzi 5:17", "Se uno e in Cristo, egli e una nuova creatura; le cose vecchie sono passate."],
+    ["Ebrei 11:1", "La fede e la certezza delle cose che si sperano, la dimostrazione di quelle che non si vedono."],
+    ["1 Pietro 5:7", "Gettando sopra di lui ogni vostra ansietà, perche egli ha cura di voi."],
+    ["Salmi 91:1", "Chi abita nel segreto luogo dell'Altissimo riposera all'ombra dell'Onnipotente."],
+    ["Romani 12:2", "Non vi conformate a questo secolo, ma siate trasformati mediante il rinnovamento della vostra mente."],
+    ["Giovanni 14:6", "Io sono la via, la verita e la vita; nessuno viene al Padre se non per mezzo di me."],
+    ["Luca 1:37", "Niuna cosa e impossibile a Dio."],
+    ["Giovanni 8:32", "Conoscerete la verita, e la verita vi fara liberi."],
+    ["Marco 11:24", "Tutte le cose che domandate, credete di averle ricevute quando pregate, e le avrete."],
+    ["Matteo 7:7", "Chiedete e vi sara dato; cercate e troverete; picchiate e vi sara aperto."],
+    ["Giovanni 10:10", "Io son venuto perche abbiano la vita e l'abbiano ad esuberanza."],
+    ["Matteo 28:20", "Ecco, io sono con voi tutti i giorni, sino alla fine dell'eta presente."],
+    ["Filippesi 4:7", "La pace di Dio, che supera ogni intelligenza, guardera i vostri cuori in Cristo Gesu."],
+    ["2 Corinzi 12:9", "La mia grazia ti e sufficiente, perche la potenza si perfeziona nella debolezza."],
+    ["Giovanni 1:1", "Nel principio era la Parola, e la Parola era con Dio, e la Parola era Dio."],
+    ["Ebrei 4:12", "La parola di Dio e viva ed efficace, e piu affilata d'ogni spada a due tagli."],
+    ["Romani 10:9", "Se confessi con la tua bocca Gesu come Signore e creda nel tuo cuore che Iddio l'ha risuscitato, sarai salvato."],
+    ["Apocalisse 3:20", "Ecco, io sto alla porta e picchio; se qualcuno ode la mia voce ed apre la porta, io entrero da lui."],
+    ["Salmi 55:22", "Getta il tuo peso sopra l'Eterno, ed egli ti sosterra."],
+    ["Isaia 43:2", "Quando tu passerai per le acque, io saro con te; e per i fiumi, non ti sommergeranno."],
+    ["Giovanni 11:25", "Io sono la risurrezione e la vita; chi crede in me, anche se muore, vivra."],
+    ["1 Giovanni 1:9", "Se confessiamo i nostri peccati, egli e fedele e giusto da perdonarci i peccati."],
+    ["Salmi 121:2", "Il mio aiuto viene dall'Eterno, che ha fatto i cieli e la terra."],
+    ["Deuteronomio 31:6", "Sii forte e coraggioso; l'Eterno Iddio tuo e colui che cammina con te."],
+    ["Romani 1:16", "Non mi vergogno del vangelo di Cristo; esso e potenza di Dio per la salvezza di chiunque crede."],
+    ["Matteo 22:37", "Ama il Signore Iddio tuo con tutto il tuo cuore, con tutta l'anima tua e con tutta la mente tua."],
+]
+
+today = datetime.date.today()
+day_of_year = today.timetuple().tm_yday
+verse = VOTD[day_of_year % len(VOTD)]
+ref, text = verse[0], verse[1]
+
+prompt = (
+    "Sei un pastore pentecostale-evangelico che guida la meditazione quotidiana della comunita.\n\n"
+    "Il versetto di oggi e: \"" + ref + "\" - \"" + text + "\"\n\n"
+    "Scrivi una breve meditazione giornaliera in italiano con queste parti (testo fluente, senza titoli o elenchi):\n"
+    "1. Un commento spirituale sul versetto (2-3 frasi), con riferimento all'azione dello Spirito Santo\n"
+    "2. Un'applicazione pratica per la vita di oggi (1-2 frasi concrete)\n"
+    "3. Una breve preghiera di chiusura (2-3 frasi, inizia esattamente con \"Signore,\")\n\n"
+    "Tono: caldo, diretto, pieno di fede pentecostale. Circa 120-150 parole totali. "
+    "Nessun asterisco o titolo. Separa la preghiera con una riga vuota."
+)
+
+key = os.environ["GEMINI_KEY"]
+url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + key
+body = json.dumps({
+    "contents": [{"parts": [{"text": prompt}]}],
+    "generationConfig": {"maxOutputTokens": 400, "temperature": 0.8}
+}).encode("utf-8")
+
+req = urllib.request.Request(url, data=body, headers={"Content-Type": "application/json"})
+resp = urllib.request.urlopen(req, timeout=30)
+data = json.loads(resp.read())
+medit_text = data["candidates"][0]["content"]["parts"][0]["text"].strip()
+
+output = {
+    "data": today.strftime("%d/%m/%Y"),
+    "riferimento": ref,
+    "versetto": text,
+    "meditazione": medit_text
+}
+
+with open("meditazione.json", "w", encoding="utf-8") as f:
+    json.dump(output, f, ensure_ascii=False, indent=2)
+
+print("Meditazione generata per", today, "-", ref)
