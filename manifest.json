@@ -1,0 +1,27 @@
+{
+  "name": "Tenda di Convegno",
+  "short_name": "Tenda",
+  "description": "Bibbia (5 versioni offline), meditazione quotidiana e dizionario biblico pentecostale",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#080608",
+  "theme_color": "#1a1208",
+  "lang": "it",
+  "categories": ["education", "lifestyle"],
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
