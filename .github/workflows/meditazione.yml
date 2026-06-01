@@ -25,5 +25,5 @@ jobs:
           git config user.name "Meditazione Bot"
           git config user.email "bot@tenda"
           git add meditazione.json
-          git diff --staged --quiet || git commit -m "Meditazione del $(date +'%d/%m/%Y')"
+          git diff --staged --quiet || git commit -m "Meditazione giornaliera"
           git push
