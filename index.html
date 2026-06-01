@@ -912,19 +912,16 @@ function showDictHome() {
   });
 }
 
-// Avvia dopo che il DOM è pronto
-document.addEventListener('DOMContentLoaded', function(){ showDictHome(); });
-if (document.readyState !== 'loading') showDictHome();
-
 // ═══════════════════════════════════════════════
 // MEDITAZIONE GIORNALIERA — da meditazione.json
 // ═══════════════════════════════════════════════
-// Avvia tutto dopo che il DOM è pronto
-document.addEventListener('DOMContentLoaded', function() {
+function startApp() {
   initVOTD();
+  showDictHome();
   loadMedit();
-});
-if (document.readyState !== 'loading') { initVOTD(); loadMedit(); }
+}
+document.addEventListener('DOMContentLoaded', startApp);
+if (document.readyState !== 'loading') startApp();
 
 async function loadMedit() {
   var btn = document.getElementById('medit-btn');
