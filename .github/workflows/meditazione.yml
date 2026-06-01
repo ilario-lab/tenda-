@@ -1,0 +1,94 @@
+name: Meditazione Giornaliera
+
+on:
+  schedule:
+    - cron: '0 5 * * *'  # ogni giorno alle 06:00 ora italiana (UTC+1)
+  workflow_dispatch:       # permette lancio manuale dal sito GitHub
+
+jobs:
+  genera:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Genera meditazione con Gemini
+        env:
+          GEMINI_KEY: ${{ secrets.GEMINI_KEY }}
+        run: |
+          python3 << 'PYEOF'
+          import urllib.request, json, datetime, os, re
+
+          # Versetti usati nell'app (stesso array VOTD dell'HTML)
+          VOTD = [
+            ["Giovanni 3:16", "Perché Dio ha tanto amato il mondo, che ha dato il suo unigenito Figlio, affinché chiunque crede in lui non perisca, ma abbia vita eterna."],
+            ["Filippesi 4:13", "Posso ogni cosa in Cristo che mi fortifica."],
+            ["Geremia 29:11", "Poiché io so i pensieri che ho verso di voi, dice l'Eterno: pensieri di pace e non di male, per darvi un avvenire e una speranza."],
+            ["Salmi 23:1", "L'Eterno è il mio pastore; nulla mi mancherà."],
+            ["Romani 8:28", "Or sappiamo che tutte le cose cooperano al bene di quelli che amano Dio."],
+            ["Proverbi 3:5", "Confida nell'Eterno con tutto il tuo cuore e non ti appoggiare alla tua intelligenza."],
+            ["Isaia 40:31", "Ma quelli che sperano nell'Eterno acquistano nuove forze; si alzano a volo come aquile."],
+            ["Matteo 11:28", "Venite a me, voi tutti che siete affaticati e oppressi, e io vi darò riposo."],
+            ["Salmi 46:1", "Dio è il nostro rifugio e la nostra forza, un aiuto sempre pronto nelle difficoltà."],
+            ["Giosuè 1:9", "Non t'ho io comandato? Sii forte e coraggioso; non temere e non ti spaventare."],
+            ["1 Giovanni 1:9", "Se confessiamo i nostri peccati, egli è fedele e giusto da perdonarci i peccati."],
+            ["Marco 11:24", "Tutte le cose che domandate, credete di averle ricevute quando pregate, e le avrete."],
+            ["Matteo 7:7", "Chiedete e vi sarà dato; cercate e troverete; picchiate e vi sarà aperto."],
+            ["Isaia 43:2", "Quando tu passerai per le acque, io sarò con te; e per i fiumi, non ti sommergeranno."],
+            ["Luca 1:37", "Poiché niuna cosa è impossibile a Dio."],
+            ["Romani 1:16", "Non mi vergogno del vangelo di Cristo; poiché esso è potenza di Dio per la salvezza di chiunque crede."],
+            ["Apocalisse 3:20", "Ecco, io sto alla porta e picchio; se qualcuno ode la mia voce ed apre la porta, io entrerò da lui."],
+            ["Romani 10:9", "Se confessi con la tua bocca Gesù come Signore, e creda nel tuo cuore che Iddio l'ha risuscitato dai morti, sarai salvato."],
+            ["Salmi 55:22", "Getta il tuo peso sopra l'Eterno, ed egli ti sosterrà."],
+            ["Deuteronomio 31:6", "Sii forte e coraggioso; non temere; poiché l'Eterno Iddio tuo è colui che cammina con te."],
+            ["Giovanni 8:32", "E conoscerete la verità, e la verità vi farà liberi."],
+          ]
+
+          today = datetime.date.today()
+          day_of_year = today.timetuple().tm_yday
+          verse = VOTD[day_of_year % len(VOTD)]
+          ref, text = verse[0], verse[1]
+
+          prompt = f"""Sei un pastore pentecostale-evangelico che guida la meditazione quotidiana della comunità.
+
+Il versetto di oggi è: "{ref}" — "{text}"
+
+Scrivi una breve meditazione giornaliera in italiano con queste parti (testo fluente, senza titoli o elenchi):
+1. Un commento spirituale sul versetto (2-3 frasi), con riferimento all'azione dello Spirito Santo
+2. Un'applicazione pratica per la vita di oggi (1-2 frasi concrete)
+3. Una breve preghiera di chiusura (2-3 frasi, inizia esattamente con "Signore,")
+
+Tono: caldo, diretto, pieno di fede pentecostale. Circa 120-150 parole totali. Nessun asterisco o titolo. Separa la preghiera con una riga vuota."""
+
+          key = os.environ['GEMINI_KEY']
+          url = f'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={key}'
+          body = json.dumps({
+            'contents': [{'parts': [{'text': prompt}]}],
+            'generationConfig': {'maxOutputTokens': 400, 'temperature': 0.8}
+          }).encode()
+          req = urllib.request.Request(url, data=body, headers={'Content-Type': 'application/json'})
+          resp = urllib.request.urlopen(req, timeout=30)
+          data = json.loads(resp.read())
+          medit_text = data['candidates'][0]['content']['parts'][0]['text'].strip()
+
+          output = {
+            'data': today.strftime('%d/%m/%Y'),
+            'riferimento': ref,
+            'versetto': text,
+            'meditazione': medit_text
+          }
+          with open('meditazione.json', 'w', encoding='utf-8') as f:
+            json.dump(output, f, ensure_ascii=False, indent=2)
+          print(f"Meditazione generata per {today}: {ref}")
+          PYEOF
+
+      - name: Commit e push
+        run: |
+          git config user.name "Meditazione Bot"
+          git config user.email "bot@tenda-di-convegno"
+          git add meditazione.json
+          git diff --staged --quiet || git commit -m "Meditazione del $(date +'%d/%m/%Y')"
+          git push
