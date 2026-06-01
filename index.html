@@ -179,7 +179,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 <div class="ver-bar" id="dict-bar">
   <span class="ver-lbl">Fonte:</span>
   <button class="ver-btn on" data-dict="schaff">Dizionario Biblico</button>
-  <button class="ver-btn" data-dict="wikt">Italiano (Wikipedia)</button>
+  <button class="ver-btn" data-dict="zing">Zingarelli</button>
 </div>
 
 <div class="panels">
@@ -827,53 +827,59 @@ function renderSchaffEntry(word, text, el) {
   document.getElementById('p-diz').scrollTop = 0;
 }
 
+// Mappa chunk Zingarelli per prima lettera
+var ZING_MAP = {
+  A:'A',B:'B',C:'C',D:'D',E:'EF',F:'EF',
+  G:'GL',H:'GL',I:'GL',J:'GL',K:'GL',L:'GL',
+  M:'MO',N:'MO',O:'MO',P:'PQ',Q:'PQ',
+  R:'R',S:'S',T:'TZ',U:'TZ',V:'TZ',W:'TZ',X:'TZ',Y:'TZ',Z:'TZ'
+};
+
 async function searchWikt(raw, el) {
-  // Prima prova Wikipedia italiana (REST API)
-  var url = 'https://it.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(raw);
+  // Determina chunk dalla prima lettera
+  var first = raw.replace(/^[^a-zA-ZÀ-ÿ]*/,'').charAt(0).toUpperCase();
+  first = first.normalize('NFD').replace(/[̀-ͯ]/g,'');
+  var chunk = ZING_MAP[first] || 'TZ';
+  var cacheKey = 'zing-' + chunk;
+
   try {
-    var resp = await fetch(url, { headers: { 'Accept': 'application/json' } });
-    if (resp.ok) {
-      var data = await resp.json();
-      if (data.extract) {
-        var body = '<p>' + escHtml(data.extract) + '</p>';
-        if (data.content_urls && data.content_urls.desktop) {
-          body += '<a class="popup-ext" href="' + data.content_urls.desktop.page + '" target="_blank" rel="noopener">Leggi su Wikipedia \u2192</a>';
-        }
-        el.innerHTML = '<div class="dict-card">' +
-          '<div class="dict-src-lbl">Dizionario Italiano \u2014 Wikipedia</div>' +
-          '<div class="dict-term">' + escHtml(data.title || raw) + '</div>' +
-          '<div class="dict-body">' + body + '</div>' +
-          '</div>';
-        document.getElementById('p-diz').scrollTop = 0;
-        return;
-      }
+    // Carica chunk se non in cache
+    if (!dictCache[cacheKey]) {
+      var resp = await fetch('dicts/zingarelli-' + chunk + '.json');
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      dictCache[cacheKey] = await resp.json();
     }
-  } catch(e) {}
-  // Fallback: cerca con titolo capitalizzato
-  var cap = raw.charAt(0).toUpperCase() + raw.slice(1);
-  if (cap !== raw) {
-    try {
-      var resp2 = await fetch('https://it.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(cap));
-      if (resp2.ok) {
-        var data2 = await resp2.json();
-        if (data2.extract) {
-          var body2 = '<p>' + escHtml(data2.extract) + '</p>';
-          if (data2.content_urls && data2.content_urls.desktop) {
-            body2 += '<a class="popup-ext" href="' + data2.content_urls.desktop.page + '" target="_blank" rel="noopener">Leggi su Wikipedia \u2192</a>';
-          }
-          el.innerHTML = '<div class="dict-card">' +
-            '<div class="dict-src-lbl">Dizionario Italiano \u2014 Wikipedia</div>' +
-            '<div class="dict-term">' + escHtml(data2.title || raw) + '</div>' +
-            '<div class="dict-body">' + body2 + '</div>' +
-            '</div>';
-          document.getElementById('p-diz').scrollTop = 0;
-          return;
-        }
+    var data = dictCache[cacheKey];
+    var q = normDct(raw);
+    var keys = Object.keys(data);
+
+    // Ricerca: esatta, poi inizia con, poi contiene
+    var found = keys.find(function(k){ return normDct(k) === q; });
+    if (!found) found = keys.find(function(k){ return normDct(k).startsWith(q); });
+    if (!found) found = keys.find(function(k){ return normDct(k).includes(q); });
+
+    if (found) {
+      el.innerHTML = '<div class="dict-card">' +
+        '<div class="dict-src-lbl">Dizionario Italiano \u2014 Zingarelli 2011</div>' +
+        '<div class="dict-term">' + escHtml(found) + '</div>' +
+        '<div class="dict-body">' + escHtml(data[found]) + '</div>' +
+        '</div>';
+      document.getElementById('p-diz').scrollTop = 0;
+    } else {
+      var firstWord = q.split(' ')[0];
+      var sugg = keys.filter(function(k){ return normDct(k).startsWith(firstWord); }).slice(0,12);
+      var h = '<div class="err">\u00ab' + escHtml(raw) + '\u00bb non trovato nello Zingarelli.</div>';
+      if (sugg.length) {
+        h += '<div class="sug-wrap"><div class="sug-title">Forse cercavi</div><div class="sug-list">' +
+          sugg.map(function(k){
+            return '<button class="sug-btn" onclick="document.getElementById(\'dIn\').value=' + JSON.stringify(k) + ';searchDict()">' + escHtml(k) + '</button>';
+          }).join('') + '</div></div>';
       }
-    } catch(e) {}
+      el.innerHTML = h;
+    }
+  } catch(e) {
+    el.innerHTML = '<div class="err">Errore caricamento Zingarelli: ' + escHtml(e.message) + '</div>';
   }
-  el.innerHTML = '<div class="err">\u00ab' + escHtml(raw) + '\u00bb non trovato.<br>' +
-    '<a class="popup-ext" href="https://it.wikipedia.org/wiki/' + encodeURIComponent(raw) + '" target="_blank" rel="noopener">Cerca su Wikipedia \u2192</a></div>';
 }
 
 function showDictHome() {
