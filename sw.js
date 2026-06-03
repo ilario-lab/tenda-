@@ -1,4 +1,4 @@
-const CACHE = 'tenda-v3';
+const CACHE = 'tenda-v4';
 
 const PRECACHE = [
   './',
