@@ -171,6 +171,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
   <button class="ver-btn" data-ver="KJV">KJV (Strong)</button>
   <button class="ver-btn" data-ver="NKJV">NKJV</button>
   <button class="ver-btn" data-ver="AMP">AMP</button>
+  <button class="ver-btn" data-ver="NR2020">N. Riveduta 2020</button>
 </div>
 <div class="sbar" id="sbar-diz">
   <input id="dIn" placeholder="Cerca un termine biblico&hellip;" autocomplete="off" autocorrect="off" spellcheck="false">
@@ -179,7 +180,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 <div class="ver-bar" id="dict-bar">
   <span class="ver-lbl">Fonte:</span>
   <button class="ver-btn on" data-dict="schaff">Dizionario Biblico</button>
-  <button class="ver-btn" data-dict="zing">Zingarelli</button>
+  <button class="ver-btn" data-dict="zing">Dizionario Italiano</button>
 </div>
 
 <div class="panels">
@@ -860,7 +861,7 @@ async function searchWikt(raw, el) {
 
     if (found) {
       el.innerHTML = '<div class="dict-card">' +
-        '<div class="dict-src-lbl">Dizionario Italiano \u2014 Zingarelli 2011</div>' +
+        '<div class="dict-src-lbl">Dizionario Italiano</div>' +
         '<div class="dict-term">' + escHtml(found) + '</div>' +
         '<div class="dict-body">' + escHtml(data[found]) + '</div>' +
         '</div>';
